@@ -1,0 +1,7 @@
+option('kernel_cflags', type: 'string', description: 'Extra C compiler flags for kernel')
+option('kernel_cxxflags', type: 'string', description: 'Extra C++ compiler flags for kernel')
+
+option('lldb_debug', type: 'boolean', value: false, description: 'Debugging')
+option('lldb', type: 'boolean', value: false, description: 'debugging')
+
+option('vnc', type: 'boolean', value: false, description: 'Start VNC server at 127.0.0.1:5901')
