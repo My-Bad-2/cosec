@@ -1,5 +1,11 @@
 src = files(
-    'main.cpp'
+    'main.cpp',
+
+    'drivers/drivers.cpp',
+    'drivers/framebuffer.cpp',
+
+    'libc/string.cpp',
+    'libc/stdlib.cpp'
 )
 
 c_args = get_option('kernel_cflags').split()
