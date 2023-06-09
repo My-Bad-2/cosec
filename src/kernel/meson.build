@@ -20,6 +20,8 @@ ld_args = [
 
 args = []
 
+subdir('arch' / arch)
+
 kernel_elf = executable('cosec.elf', src,
     dependencies: [deps],
     include_directories: incs,

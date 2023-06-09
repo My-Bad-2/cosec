@@ -2,6 +2,7 @@
 
 #include <kernel.h>
 #include <drivers/drivers.hpp>
+#include <system/system.hpp>
 
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
@@ -11,6 +12,7 @@ limine_framebuffer_request framebuffer_request = {
 };
 
 extern "C" void _start() {
+    system::init();
     drivers::init();
 
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);

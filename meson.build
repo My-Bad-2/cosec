@@ -1,4 +1,4 @@
-project('cosec', ['cpp', 'c'],
+project('cosec', ['cpp', 'c', 'nasm'],
   version : '0.1',
   default_options : ['warning_level=3'],
   license: 'MIT')
@@ -73,10 +73,17 @@ qemu_args += ['-s', '-S']
 endif
 endif
 
+asm_format = ''
+
+if arch =='x86_64'
+asm_format = 'elf64'
+endif
+
 incs = [
     include_directories('include'),
     include_directories('include/kernel'),
-    include_directories('include/libc')
+    include_directories('include/libc'),
+    include_directories('include/kernel/arch/' + arch)
 ]
 
 macros = [
@@ -98,6 +105,8 @@ add_global_arguments([
     '-fno-pie',
     '-Ofast'
 ], language : ['c', 'cpp'])
+
+add_global_arguments(['-f', asm_format], language: 'nasm')
 
 add_global_arguments([
     '-std=gnu++20',

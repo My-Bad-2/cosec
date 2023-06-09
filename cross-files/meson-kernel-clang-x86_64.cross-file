@@ -7,6 +7,7 @@ ar = 'llvm-ar-16'
 strip = 'llvm-strip-16'
 pkg-config = 'pkg-config'
 cmake = 'cmake'
+nasm = 'nasm'
 
 [built-in options]
 c_args = ['-target', 'x86_64-pc-elf']
