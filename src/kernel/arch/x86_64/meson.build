@@ -1,7 +1,12 @@
 src += files(
     'system/gdt/gdt.asm',
     'system/gdt/gdt.cpp',
-    'system/system.cpp'
+    'system/port/port.cpp',
+    'system/system.cpp',
+
+    'drivers/serials.cpp',
+
+    'arch.cpp'
 )
 
 args += [
