@@ -1,6 +1,7 @@
 #include <stdint.h>
-#include <system/idt.hpp>
+#include <debug/log.hpp>
 #include <system/gdt.hpp>
+#include <system/idt.hpp>
 
 extern "C" uintptr_t __interrupt_vector[256];
 
@@ -22,12 +23,14 @@ void Entry::set(uintptr_t handler, uint8_t ist, uint8_t flags) {
 }
 
 void init() {
-    for(int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; i++) {
         idt.entries[i].set(__interrupt_vector[i], 0, IDT_GATE);
     }
 
     idt.entries[32].set(__interrupt_vector[32], 0, IDT_GATE);
 
     idt_update(&desc);
+
+    log::info << "Initialized IDT!\n";
 }
-}
+}  // namespace system::idt

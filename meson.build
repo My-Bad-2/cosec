@@ -83,6 +83,7 @@ incs = [
     include_directories('include'),
     include_directories('include/kernel'),
     include_directories('include/libc'),
+    include_directories('include/libc++'),
     include_directories('include/kernel/arch/' + arch)
 ]
 
@@ -120,7 +121,9 @@ add_global_arguments([
 limine = subproject('limine')
 
 deps = [
-    dependency('limine')
+    dependency('limine'),
+    dependency('printf'),
+    dependency('cxxshim')
 ]
 
 inc_deps = []

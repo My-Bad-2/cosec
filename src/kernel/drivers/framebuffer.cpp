@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <debug/log.hpp>
 
 namespace kernel::drivers::fb {
 limine_framebuffer** framebuffers = nullptr;
@@ -24,6 +25,8 @@ void init(limine_framebuffer_response* framebuffer) {
 
     memset(main_frm->address, 0,
            main_frm->width * main_frm->height * sizeof(uint64_t));
+
+    log::info << "Initialized Framebuffer!\n";
 }
 
 void plot_pixel(uint64_t x, uint64_t y, Color color, limine_framebuffer* frm) {

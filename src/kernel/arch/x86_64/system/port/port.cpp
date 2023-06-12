@@ -1,5 +1,5 @@
-#include <system/port.hpp>
 #include <stdint.h>
+#include <system/port.hpp>
 
 namespace system::port {
 uint8_t in8(uint16_t port) {
@@ -41,4 +41,4 @@ void out32(uint16_t port, uint32_t val) {
 void io_pause() {
     asm volatile("outb %al, $0x80");
 }
-}
+}  // namespace system::port

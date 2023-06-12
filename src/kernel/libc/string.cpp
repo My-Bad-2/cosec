@@ -329,8 +329,8 @@ int strcmp(const char* a, const char* b) {
 int strncmp(const char* a, const char* b, size_t max_size) {
     size_t i = 0;
 
-    while(true) {
-        if(!(i < max_size)) {
+    while (true) {
+        if (!(i < max_size)) {
             return 0;
         }
 
@@ -356,8 +356,8 @@ int strncmp(const char* a, const char* b, size_t max_size) {
 void* memchr(const void* s, int c, size_t size) {
     auto s_bytes = static_cast<const uint8_t*>(s);
 
-    for(size_t i = 0; i < size; i++) {
-        if(s_bytes[i] == static_cast<uint8_t>(c)) {
+    for (size_t i = 0; i < size; i++) {
+        if (s_bytes[i] == static_cast<uint8_t>(c)) {
             return const_cast<uint8_t*>(s_bytes + i);
         }
     }
@@ -368,15 +368,15 @@ void* memchr(const void* s, int c, size_t size) {
 char* strchr(const char* s, int c) {
     size_t i = 0;
 
-    while(s[i]) {
-        if(s[i] == c) {
+    while (s[i]) {
+        if (s[i] == c) {
             return const_cast<char*>(&s[i]);
         }
 
         i++;
     }
 
-    if(c == 0) {
+    if (c == 0) {
         return const_cast<char*>(&s[i]);
     }
 

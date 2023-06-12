@@ -1,0 +1,8 @@
+[wrap-git]
+url: https://github.com/eyalroz/printf.git
+revision: develop
+depth = 1
+patch_directory = printf
+
+[provide]
+printf = printf_dep

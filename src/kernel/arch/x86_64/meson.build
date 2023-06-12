@@ -1,7 +1,14 @@
 src += files(
     'system/gdt/gdt.asm',
     'system/gdt/gdt.cpp',
+    
+    'system/interrupts/idt.asm',
+    'system/interrupts/idt.cpp',
+    'system/interrupts/interrupts.asm',
+    'system/interrupts/interrupts.cpp',
+
     'system/port/port.cpp',
+    
     'system/system.cpp',
 
     'drivers/serials.cpp',

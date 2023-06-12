@@ -10,7 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
-
+a
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -37,3 +37,5 @@
 .cache
 subprojects/limine
 subprojects/ovmf_binaries
+subprojects/printf
+subprojects/cxxshim

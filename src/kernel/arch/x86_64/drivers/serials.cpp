@@ -4,6 +4,8 @@
 #include <drivers/serials.hpp>
 #include <system/port.hpp>
 
+#include <debug/log.hpp>
+
 namespace kernel::drivers::serial {
 using namespace system::port;
 
@@ -51,11 +53,11 @@ size_t write(com_port port, const void* buf, size_t size) {
     return size;
 }
 
-char* read(com_port port, char *buffer, size_t size) {
+char* read(com_port port, char* buffer, size_t size) {
     char current_char = '1';
     size_t read_count = 0;
 
-    while(read_count < size && ((!current_char) == '\0')) {
+    while (read_count < size && ((!current_char) == '\0')) {
         current_char = getc(port);
         buffer[read_count++] = current_char;
         size--;
@@ -83,5 +85,7 @@ void init(com_port port) {
     write_reg(port, COM_MODEM_CONTROL,
               COM_MODEM_DTR | COM_MODEM_RTS | COM_MODEM_OUT2);
     write_reg(port, COM_INTERRUPT, COM_INTERRUPT_WHEN_DATA_AVAILABLE);
+
+    log::info << "Initialized Serials!\n";
 }
 }  // namespace kernel::drivers::serial

@@ -1,9 +1,10 @@
 #include <stdint.h>
+#include <debug/log.hpp>
 #include <system/gdt.hpp>
 
 // external asm function helper
 extern "C" {
-    void gdt_update(uint64_t descriptor);
+void gdt_update(uint64_t descriptor);
 }
 
 namespace system::gdt {
@@ -51,9 +52,11 @@ void init() {
     gdt.tss.set(reinterpret_cast<uintptr_t>(&tss));
 
     gdt_update(reinterpret_cast<uintptr_t>(&desc));
+
+    log::info << "Initialized GDT!\n";
 }
 
-void load_tss(Tss *tss) {
+void load_tss(Tss* tss) {
     gdt.tss.set(reinterpret_cast<uintptr_t>(tss));
 
     tss_update();

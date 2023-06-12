@@ -1,4 +1,5 @@
 #include <limine.h>
+#include <stdio.h>
 
 #include <kernel.h>
 #include <arch.hpp>
@@ -17,6 +18,8 @@ extern "C" void _start() {
     drivers::init();
 
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
+
+    // asm volatile("div %ah"); // cause divide by zero error
 
     asm volatile("hlt");
 }
