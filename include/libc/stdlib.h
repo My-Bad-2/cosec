@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
+
 // General utilities
 typedef struct {
     int quot, rem;
@@ -34,6 +36,11 @@ unsigned long long strtoull(const char* __restrict string, char** __restrict end
 
 // String Conversion functions
 void itoa(char* buf, unsigned long int n, int base);
+
+// Memory Management functions
+void* malloc(size_t size);
+void free(void* ptr);
+void* realloc(void* ptr, size_t size);
 
 // Integer arithmetic functions
 int abs(int number);

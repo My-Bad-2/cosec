@@ -8,7 +8,13 @@ src = files(
 
     'libc/string.cpp',
     'libc/stdlib.cpp',
-    'libc/ctype.cpp'
+    'libc/ctype.cpp',
+
+    'memory/dynamic.cpp',
+    'memory/heap.cpp',
+    'memory/memory.cpp',
+    'memory/physical.cpp',
+    'memory/virtual.cpp'
 )
 
 c_args = get_option('kernel_cflags').split()

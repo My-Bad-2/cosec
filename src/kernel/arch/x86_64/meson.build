@@ -1,4 +1,6 @@
 src += files(
+    'system/cpu/cpu.cpp',
+
     'system/gdt/gdt.asm',
     'system/gdt/gdt.cpp',
     
@@ -8,10 +10,12 @@ src += files(
     'system/interrupts/interrupts.cpp',
 
     'system/port/port.cpp',
-    
+
     'system/system.cpp',
 
     'drivers/serials.cpp',
+
+    'memory/virtual.cpp',
 
     'arch.cpp'
 )

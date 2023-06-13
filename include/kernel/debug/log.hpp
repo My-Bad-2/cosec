@@ -1,13 +1,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace {
 class Hex;
 class Hex8;
 class Hex16;
 class Hex32;
 class Hex64;
-}  // namespace
 
 namespace debug {
 struct Color {
@@ -83,7 +81,6 @@ class err : public Logger {
 };
 }  // namespace debug
 
-namespace {
 class Hex {
    private:
     uint32_t m_data;
@@ -133,7 +130,6 @@ class Hex64 {
     Hex64(uint64_t value) : m_data(value) {}
     friend class debug::Logger;
 };
-}  // namespace
 
 namespace log {
 extern debug::info info;
