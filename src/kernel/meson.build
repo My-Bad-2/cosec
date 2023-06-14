@@ -1,6 +1,8 @@
 src = files(
     'main.cpp',
 
+    'cxx/support.cpp',
+
     'debug/log.cpp',
 
     'drivers/drivers.cpp',
@@ -10,7 +12,6 @@ src = files(
     'libc/stdlib.cpp',
     'libc/ctype.cpp',
 
-    'memory/dynamic.cpp',
     'memory/heap.cpp',
     'memory/memory.cpp',
     'memory/physical.cpp',

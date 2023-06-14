@@ -12,6 +12,6 @@ void init() {
 
     physical::init();
     heap::init();
-    // virt::init(); // Page fault, idk why?
+    virt::init(); // Page fault, idk why?
 }
 }  // namespace kernel::memory

@@ -151,6 +151,6 @@ void init() {
 
     kernel_pagemap->load();
 
-    log::info << "Initialized Virtual Memory Management\n";
+    log::info << "Initialized Virtual Memory Management!\n";
 }
 }  // namespace kernel::memory::virt

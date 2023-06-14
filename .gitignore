@@ -39,3 +39,4 @@ subprojects/limine
 subprojects/ovmf_binaries
 subprojects/printf
 subprojects/cxxshim
+subprojects/frigg

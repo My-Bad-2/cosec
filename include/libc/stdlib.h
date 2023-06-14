@@ -41,6 +41,7 @@ void itoa(char* buf, unsigned long int n, int base);
 void* malloc(size_t size);
 void free(void* ptr);
 void* realloc(void* ptr, size_t size);
+void* calloc(size_t count, size_t size);
 
 // Integer arithmetic functions
 int abs(int number);

@@ -61,14 +61,14 @@ if get_option('lldb_debug') or lldb
 qemu_args += [
     '-no-reboot', '-no-shutdown',
     '-d', 'int', '-D', logfile,
-    '-monitor', 'telnet:127.0.0.1:12345,nowait'
+    # '-monitor', 'telnet:127.0.0.1:12345,nowait'
 ]
 
 if arch == 'x86_64'
 qemu_args += ['-M', 'smm=off']
 endif
 
-if gdb
+if lldb
 qemu_args += ['-s', '-S']
 endif
 endif
@@ -123,7 +123,8 @@ limine = subproject('limine')
 deps = [
     dependency('limine'),
     dependency('printf'),
-    dependency('cxxshim')
+    dependency('cxxshim'),
+    dependency('frigg')
 ]
 
 inc_deps = []

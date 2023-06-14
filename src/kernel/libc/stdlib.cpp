@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <memory/heap.hpp>
 
 namespace {
 template <typename T>
@@ -48,4 +49,22 @@ void itoa(char* buf, unsigned long int n, int base) {
         buf[j] = buf[i];
         buf[i] = tmp;
     }
+}
+
+using namespace kernel::memory::heap;
+
+void* malloc(size_t size) {
+    return allocator->malloc(size);
+}
+
+void free(void* ptr) {
+    return allocator->free(ptr);
+}
+
+void* realloc(void* ptr, size_t size) {
+    return allocator->realloc(ptr, size);
+}
+
+void* calloc(size_t count, size_t size) {
+    return allocator->calloc(count, size);
 }

@@ -1,11 +1,13 @@
 #include <limine.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <kernel.h>
 #include <arch.hpp>
 
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
+#include <debug/log.hpp>
 
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
@@ -62,7 +64,7 @@ extern "C" void _start() {
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
 
     // asm volatile("div %ah"); // cause divide by zero error
-
+    
     asm volatile("hlt");
 }
 }  // namespace kernel

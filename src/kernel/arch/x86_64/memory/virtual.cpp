@@ -28,9 +28,9 @@ enum {
     No_exec = (1UL << 63)
 };
 
-struct [[gnu::packed]] pagetable {
+struct pagetable {
     pt_entry entries[512];
-};
+} __attribute__((packed));
 
 uintptr_t pa_mask = 0x000FFFFFFFFFF000;
 static bool gib1_pages = false;

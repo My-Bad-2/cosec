@@ -93,8 +93,10 @@ static void interrupt_error_handler(idt::Regs* regs) {
 
     has_panic = true;
 
+    Hex8 int_no = regs->int_no;
+
     log::error << "\n---------------------------\n";
-    log::error << exception_messages[regs->int_no] << '(' << regs->int_no
+    log::error << exception_messages[regs->int_no] << '(' << int_no
                << ") with error code = " << regs->error_code << "!\n";
 
     dump_register(regs);

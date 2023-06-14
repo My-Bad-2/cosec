@@ -31,4 +31,9 @@ template <typename T>
 constexpr inline T to_higher_half(T a) {
     return is_higher_half(a) ? a : (T)((uintptr_t)a + hhdm_offset);
 }
+
+constexpr inline auto div_roundup(auto n, auto a) {
+    return align_down(n + a - 1, a) / a;
+}
+
 }  // namespace kernel::memory
