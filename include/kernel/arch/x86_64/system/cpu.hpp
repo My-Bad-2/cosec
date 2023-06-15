@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <system/gdt.hpp>
+#include <system/idt.hpp>
 
 namespace system::cpu {
 bool id(uint32_t leaf, uint32_t subleaf, uint32_t& eax, uint32_t& ebx,

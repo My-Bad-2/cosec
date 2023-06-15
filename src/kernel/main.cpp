@@ -9,6 +9,8 @@
 #include <memory/memory.hpp>
 #include <debug/log.hpp>
 
+#include <assert.h>
+
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
@@ -64,6 +66,8 @@ extern "C" void _start() {
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
 
     // asm volatile("div %ah"); // cause divide by zero error
+    assert(1 < 2);
+    assert(1 > 2);
     
     asm volatile("hlt");
 }

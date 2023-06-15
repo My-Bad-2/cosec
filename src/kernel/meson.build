@@ -11,6 +11,7 @@ src = files(
     'libc/string.cpp',
     'libc/stdlib.cpp',
     'libc/ctype.cpp',
+    'libc/assert.cpp',
 
     'memory/heap.cpp',
     'memory/memory.cpp',
