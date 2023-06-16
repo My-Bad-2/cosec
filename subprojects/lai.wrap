@@ -1,0 +1,8 @@
+[wrap-git]
+url = https://github.com/managarm/lai.git
+revision = master
+depth = 1
+patch_directory = lai
+
+[provide]
+lai = lai_dep

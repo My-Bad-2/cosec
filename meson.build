@@ -1,6 +1,6 @@
 project('cosec', ['cpp', 'c', 'nasm'],
   version : '0.1',
-  default_options : ['warning_level=3'],
+  default_options : ['warning_level=2'],
   license: 'MIT')
 
 c = meson.get_compiler('c')
@@ -124,7 +124,8 @@ deps = [
     dependency('limine'),
     dependency('printf'),
     dependency('cxxshim'),
-    dependency('frigg')
+    dependency('frigg'),
+    dependency('lai')
 ]
 
 inc_deps = []

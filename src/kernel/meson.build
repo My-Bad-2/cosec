@@ -7,6 +7,8 @@ src = files(
 
     'drivers/drivers.cpp',
     'drivers/framebuffer.cpp',
+    'drivers/acpi.cpp',
+    'drivers/lai.cpp',
 
     'libc/string.cpp',
     'libc/stdlib.cpp',

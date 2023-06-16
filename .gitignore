@@ -40,3 +40,4 @@ subprojects/ovmf_binaries
 subprojects/printf
 subprojects/cxxshim
 subprojects/frigg
+subprojects/lai

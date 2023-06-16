@@ -5,11 +5,9 @@
 #include <kernel.h>
 #include <arch.hpp>
 
+#include <debug/log.hpp>
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
-#include <debug/log.hpp>
-
-#include <assert.h>
 
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
@@ -47,6 +45,12 @@ limine_smp_request smp_request = {
 #endif
 };
 
+limine_rsdp_request rsdp_request = {
+    .id = LIMINE_RSDP_REQUEST,
+    .revision = 0,
+    .response = nullptr,
+};
+
 limine_kernel_file_request kernel_file_request = {
     .id = LIMINE_KERNEL_FILE_REQUEST,
     .revision = 0,
@@ -66,9 +70,7 @@ extern "C" void _start() {
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
 
     // asm volatile("div %ah"); // cause divide by zero error
-    assert(1 < 2);
-    assert(1 > 2);
-    
+
     asm volatile("hlt");
 }
 }  // namespace kernel

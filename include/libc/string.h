@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifndef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -31,7 +31,7 @@ char* strchr(const char* s, int c);
 void* memset(void* dest, int c, size_t size);
 size_t strlen(const char* s);
 
-#ifndef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
