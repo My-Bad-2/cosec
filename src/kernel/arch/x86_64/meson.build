@@ -14,6 +14,7 @@ src += files(
     'system/system.cpp',
 
     'drivers/serials.cpp',
+    'drivers/pci.cpp',
 
     'memory/virtual.cpp',
 

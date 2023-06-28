@@ -15,6 +15,7 @@
 #include <memory/virtual.hpp>
 
 #include <drivers/acpi.hpp>
+#include <drivers/pci.hpp>
 
 extern "C" {
 void laihost_log(int level, const char* msg) {
@@ -120,5 +121,43 @@ uint64_t laihost_timer() {
 
 void* laihost_scan(const char* signature, size_t index) {
     return kernel::drivers::acpi::find_table(signature, index);
+}
+
+using namespace kernel::drivers::pci;
+
+void laihost_pci_writeb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                        uint16_t offset, uint8_t val) {
+    (void)seg;
+    write8(bus, slot, fun, offset, val);
+}
+
+void laihost_pci_writew(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                        uint16_t offset, uint16_t val) {
+    (void)seg;
+    write16(bus, slot, fun, offset, val);
+}
+
+void laihost_pci_writed(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                        uint16_t offset, uint32_t val) {
+    (void)seg;
+    write32(bus, slot, fun, offset, val);
+}
+
+uint8_t laihost_pci_readb(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                          uint16_t offset) {
+    (void)seg;
+    return read8(bus, slot, fun, offset);
+}
+
+uint16_t laihost_pci_readw(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                           uint16_t offset) {
+    (void)seg;
+    return read16(bus, slot, fun, offset);
+}
+
+uint32_t laihost_pci_readd(uint16_t seg, uint8_t bus, uint8_t slot, uint8_t fun,
+                           uint16_t offset) {
+    (void)seg;
+    return read32(bus, slot, fun, offset);
 }
 }

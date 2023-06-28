@@ -9,6 +9,9 @@ src = files(
     'drivers/framebuffer.cpp',
     'drivers/acpi.cpp',
     'drivers/lai.cpp',
+    'drivers/pci_bar.cpp',
+    'drivers/pci_descriptors.cpp',
+    'drivers/pci.cpp',
 
     'libc/string.cpp',
     'libc/stdlib.cpp',
