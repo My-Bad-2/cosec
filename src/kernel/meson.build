@@ -1,6 +1,8 @@
 src = files(
     'main.cpp',
 
+    'common/mmio.cpp',
+
     'cxx/support.cpp',
 
     'debug/log.cpp',

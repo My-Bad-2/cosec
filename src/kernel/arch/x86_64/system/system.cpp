@@ -2,6 +2,7 @@
 #include <system/idt.hpp>
 #include <system/system.hpp>
 #include <system/pic.hpp>
+#include <system/lapic.hpp>
 
 namespace system {
 void init() {

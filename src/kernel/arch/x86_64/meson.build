@@ -9,6 +9,7 @@ src += files(
     'system/interrupts/interrupts.asm',
     'system/interrupts/interrupts.cpp',
     'system/interrupts/pic.cpp',
+    'system/lapic/lapic.cpp',
 
     'system/port/port.cpp',
 
