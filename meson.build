@@ -17,11 +17,11 @@ iso_files = [
 
 xorriso_flags = [
     '-as', 'mkisofs',
-    '-b', 'boot/limine/limine-cd.bin',
+    '-b', 'boot/limine/limine-bios-cd.bin',
     '-no-emul-boot',
     '-boot-load-size', '4',
     '-boot-info-table',
-    '--efi-boot', 'boot/limine/limine-cd-efi.bin',
+    '--efi-boot', 'boot/limine/limine-uefi-cd.bin',
     '-efi-boot-part',
     '--efi-boot-image',
     '--protective-msdos-label'
@@ -145,7 +145,7 @@ iso = custom_target('iso',
         'cp', '@INPUT@', iso_dir / 'kernel.elf', '&&',
         'cp', iso_files, iso_dir / 'boot/limine', '&&',
         'xorriso', xorriso_flags, iso_dir, '-o', '@OUTPUT@', '&&',
-        limine.get_variable('deploy'), '@OUTPUT@', '&&',
+        limine.get_variable('deploy'), 'bios-install', '@OUTPUT@', '&&',
         'rm', '-rf', iso_dir
     ],
     build_by_default: true,
