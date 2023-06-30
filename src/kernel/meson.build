@@ -23,7 +23,9 @@ src = files(
     'memory/heap.cpp',
     'memory/memory.cpp',
     'memory/physical.cpp',
-    'memory/virtual.cpp'
+    'memory/virtual.cpp',
+
+    'time/time.cpp'
 )
 
 c_args = get_option('kernel_cflags').split()

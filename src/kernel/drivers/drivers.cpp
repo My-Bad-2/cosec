@@ -5,7 +5,7 @@
 
 namespace kernel::drivers {
 void init() {
-    acpi::init();
+    // acpi::init();
     fb::init(framebuffer_request.response);
 
     pci::enumerate();

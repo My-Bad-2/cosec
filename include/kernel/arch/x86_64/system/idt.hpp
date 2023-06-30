@@ -33,6 +33,9 @@ struct Idt {
     Entry entries[IDT_ENTRY_COUNT];
 } __attribute__((packed));
 
+void mask(uint8_t irq);
+void unmask(uint8_t irq);
+
 void init();
 extern "C" void idt_update(Descriptor* descriptor);
 }

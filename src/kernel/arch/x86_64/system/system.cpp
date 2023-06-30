@@ -3,6 +3,7 @@
 #include <system/system.hpp>
 #include <system/pic.hpp>
 #include <system/lapic.hpp>
+#include <system/ioapic.hpp>
 
 namespace system {
 void init() {
@@ -10,6 +11,7 @@ void init() {
     gdt::init();
     idt::init();
     pic::init();
+    ioapic::init();
     asm volatile("sti");
 }
 }  // namespace system

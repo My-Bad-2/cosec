@@ -6,6 +6,7 @@
 #include <arch.hpp>
 
 #include <debug/log.hpp>
+#include <drivers/acpi.hpp>
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
 
@@ -63,8 +64,12 @@ limine_kernel_address_request kernel_address_request = {
     .response = nullptr};
 
 extern "C" void _start() {
-    arch::init();
+    arch::early_init();
+
     memory::init();
+    drivers::acpi::init();
+
+    arch::init();
     drivers::init();
 
     drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);

@@ -1,8 +1,14 @@
 #include <stddef.h>
 #include <stdint.h>
+
+#include <system/idt.hpp>
 #include <system/interrupts.hpp>
+#include <system/pic.hpp>
+
+#include <algorithm>
 
 #include <debug/log.hpp>
+#include <drivers/acpi.hpp>
 
 namespace system::interrupts {
 static const char* exception_messages[32] = {
@@ -78,6 +84,10 @@ void dump_register(const idt::Regs* regs) {
     log::debug << "R15: " << regs->r15 << "\n";
 }
 
+void eoi(uint64_t int_no) {
+    pic::eoi(int_no);
+}
+
 static void interrupt_error_handler(idt::Regs* regs) {
     if (has_panic) {
         log::error << "[NESTED PANIC]"
@@ -115,9 +125,19 @@ extern "C" uint64_t interrupt_handler(uint64_t rsp) {
 
     if (regs->int_no < 32) {
         interrupt_error_handler(regs);
-    }
+    } else if ((regs->int_no >= 32) && (regs->int_no <= 48)) {
+        auto& handler = idt::handlers[regs->int_no];
 
-    if (regs->int_no == 0xF0) {
+        if (handler.eoi_first) {
+            eoi(regs->int_no);
+        }
+
+        idt::handlers[regs->int_no](regs);
+
+        if (handler.eoi_first == false) {
+            eoi(regs->int_no);
+        }
+    } else if (regs->int_no == 0xF0) {
         log::debug
             << "Non-maskable Interrupt from APIC(Possible Hardware error).\n";
     }
@@ -125,3 +145,30 @@ extern "C" uint64_t interrupt_handler(uint64_t rsp) {
     return rsp;
 }
 }  // namespace system::interrupts
+
+namespace system::idt {
+interrupt_handler handlers[256];
+
+pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint) {
+    hint = std::max(hint, IRQ(0));
+
+    using namespace kernel::drivers;
+
+    if (acpi::madt_header->legacy_pic()) {
+        if ((hint >= IRQ(0) && hint <= IRQ(15)) &&
+            handlers[hint].get() == false) {
+            return {handlers[hint], hint};
+        }
+    }
+
+    for (size_t i = hint; i < 256; i++) {
+        if (handlers[i].get() == false && handlers[i].is_reversed() == false) {
+            handlers[i].reserve();
+            return {handlers[i], static_cast<uint8_t>(i)};
+        }
+    }
+
+    log::error << "Out of Interrupt handlers\n";
+    __builtin_unreachable();
+}
+}  // namespace system::idt

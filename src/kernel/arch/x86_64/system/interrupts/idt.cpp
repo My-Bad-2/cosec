@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <debug/log.hpp>
+
 #include <system/gdt.hpp>
 #include <system/idt.hpp>
+#include <system/pic.hpp>
 
 extern "C" uintptr_t __interrupt_vector[256];
 
@@ -20,6 +22,14 @@ void Entry::set(uintptr_t handler, uint8_t ist, uint8_t flags) {
     this->offset_mid = handler >> 16;
     this->offset_high = handler >> 32;
     this->zero = 0;
+}
+
+void mask(uint8_t irq) {
+    pic::mask(irq);
+}
+
+void unmask(uint8_t irq) {
+    pic::unmask(irq);
 }
 
 void init() {

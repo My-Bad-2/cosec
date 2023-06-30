@@ -1,19 +1,45 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
+#include <printf/printf.h>
 #include <arch.hpp>
+
+#include <drivers/hpet.hpp>
+#include <drivers/pit.hpp>
+#include <drivers/rtc.hpp>
 #include <drivers/serials.hpp>
+
+#include <common/math.h>
 #include <system/system.hpp>
-#include "printf/printf.h"
+#include <time/time.hpp>
 
 using namespace kernel::drivers;
 
 namespace kernel::arch {
-void init() {
+void early_init() {
     serial::init(serial::COM1);
+}
 
+void init() {
     system::init();
+    drivers::pit::init();
+    drivers::hpet::init();
+}
+
+uint64_t time_ns() {
+    if (drivers::hpet::initialized) {
+        return drivers::hpet::time_ns();
+    }
+
+    return 0;
+}
+
+uint64_t epoch() {
+    using namespace kernel::drivers::rtc;
+    return ::epoch(second(), minute(), hour(), day(), month(), year(),
+                   century());
 }
 }  // namespace kernel::arch
 

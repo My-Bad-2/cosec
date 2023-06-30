@@ -17,6 +17,8 @@
 #include <drivers/acpi.hpp>
 #include <drivers/pci.hpp>
 
+#include <time/time.hpp>
+
 extern "C" {
 void laihost_log(int level, const char* msg) {
     if (level == LAI_DEBUG_LOG) {
@@ -109,14 +111,11 @@ uint32_t laihost_ind(uint16_t port) {
 #endif
 
 void laihost_sleep(uint64_t ms) {
-    (void)ms;
-    log::warn << "Sleep Not implemented yet\n";
+    kernel::time::msleep(ms);
 }
 
 uint64_t laihost_timer() {
-    log::warn << "Timer not implemented yet\n";
-
-    return 0;
+    return kernel::time::time_ns() / 100;
 }
 
 void* laihost_scan(const char* signature, size_t index) {

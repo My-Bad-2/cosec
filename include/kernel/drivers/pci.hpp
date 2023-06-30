@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include <drivers/acpi.hpp>
 #include <common/list.hpp>
+#include <drivers/acpi.hpp>
 
 namespace kernel::drivers::pci {
 struct pci_device_header_t {
@@ -101,3 +101,44 @@ void register_driver(uint16_t vendor_id, uint16_t device_id,
 
 extern list<pci_driver>* pci_drivers;
 }  // namespace kernel::drivers::pci
+
+namespace msi {
+union control {
+    struct {
+        uint16_t msie : 1;
+        uint16_t mmc : 3;
+        uint16_t mme : 3;
+        uint16_t c64 : 1;
+        uint16_t pvm : 1;
+        uint16_t reserved : 6;
+    };
+
+    uint16_t raw;
+} __attribute__((packed));
+
+union address {
+    struct {
+        uint32_t reserved : 2;
+        uint32_t destination_mode : 1;
+        uint32_t redirection_hint : 1;
+        uint32_t reserved_0 : 8;
+        uint32_t destination_id : 8;
+        uint32_t base_address : 12;
+    };
+
+    uint32_t raw;
+} __attribute__((packed));
+
+union data {
+    struct {
+        uint32_t vector : 8;
+        uint32_t delivery_mode : 3;
+        uint32_t reserved : 3;
+        uint32_t level : 1;
+        uint32_t trigger_mode : 1;
+        uint32_t reserved_0 : 16;
+    };
+
+    uint32_t raw;
+} __attribute__((packed));
+}  // namespace msi

@@ -10,6 +10,7 @@ src += files(
     'system/interrupts/interrupts.cpp',
     'system/interrupts/pic.cpp',
     'system/lapic/lapic.cpp',
+    'system/ioapic/ioapic.cpp',
 
     'system/port/port.cpp',
 
@@ -17,6 +18,9 @@ src += files(
 
     'drivers/serials.cpp',
     'drivers/pci.cpp',
+    'drivers/pit.cpp',
+    'drivers/rtc.cpp',
+    'drivers/hpet.cpp',
 
     'memory/virtual.cpp',
 

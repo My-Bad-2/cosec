@@ -1,197 +1,202 @@
 #pragma once
 
-#include <cstddef>
-#include <cstring>
-#include <memory/heap.hpp>
-#include <utility>
+// #include <cstddef>
+// #include <cstring>
+// #include <memory/heap.hpp>
+// #include <utility>
+#include <frg/vector.hpp>
+#include <allocator>
 
 namespace std {
-using namespace kernel::memory::heap;
+template<typename T>
+using vector = frg::vector<T, frigg_allocator<T>>;
 
-template <typename type>
-class vector {
-   private:
-    type* storage = nullptr;
-    size_t cap = 0;
-    size_t num = 0;
+// using namespace kernel::memory::heap;
 
-   public:
-    volatile bool on = false;
+// template <typename type>
+// class vector {
+//    private:
+//     type* storage = nullptr;
+//     size_t cap = 0;
+//     size_t num = 0;
 
-    ~vector() { this->destroy(); }
+//    public:
+//     volatile bool on = false;
 
-    void init() {
-        if (this->on)
-            return;
-        this->storage = new type;
-        this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-        this->num = 0;
-        this->on = true;
-    }
+//     ~vector() { this->destroy(); }
 
-    void init(size_t size) {
-        if (this->on)
-            return;
-        this->storage = new type[size];
-        this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-        this->num = 0;
-        this->on = true;
-    }
+//     void init() {
+//         if (this->on)
+//             return;
+//         this->storage = new type;
+//         this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//         this->num = 0;
+//         this->on = true;
+//     }
 
-    void destroy() {
-        if (!this->on)
-            return;
-        delete this->storage;
-        this->on = false;
-    }
+//     void init(size_t size) {
+//         if (this->on)
+//             return;
+//         this->storage = new type[size];
+//         this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//         this->num = 0;
+//         this->on = true;
+//     }
 
-    void push_back(const type& item) {
-        if (!this->on)
-            this->init();
-        if (this->num < this->cap) {
-            *(this->storage + this->num) = item;
-            this->num++;
-        } else {
-            this->storage =
-                allocator->realloc<type*>(this->storage, (this->cap + 2) * sizeof(type));
-            this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-            if (this->storage) {
-                *(this->storage + this->num) = item;
-                this->num++;
-            }
-        }
-    }
+//     void destroy() {
+//         if (!this->on)
+//             return;
+//         delete this->storage;
+//         this->on = false;
+//     }
 
-    void pop_back() {
-        if (!this->on)
-            return;
-        memset(&*(this->storage + --this->num), 0, sizeof(type));
-    }
+//     void push_back(const type& item) {
+//         if (!this->on)
+//             this->init();
+//         if (this->num < this->cap) {
+//             *(this->storage + this->num) = item;
+//             this->num++;
+//         } else {
+//             this->storage =
+//                 allocator->realloc<type*>(this->storage, (this->cap + 2) * sizeof(type));
+//             this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//             if (this->storage) {
+//                 *(this->storage + this->num) = item;
+//                 this->num++;
+//             }
+//         }
+//     }
 
-    size_t find(type item) {
-        for (size_t i = 0; i < this->num; i++) {
-            if (item == *(this->storage + i))
-                return i;
-        }
-        return -1;
-    }
+//     void pop_back() {
+//         if (!this->on)
+//             return;
+//         memset(&*(this->storage + --this->num), 0, sizeof(type));
+//     }
 
-    void remove(size_t pos) {
-        if (!this->on)
-            return;
-        if (pos >= this->num)
-            return;
-        memset(&*(this->storage + pos), 0, sizeof(type));
-        for (size_t i = 0; i < this->num - 1; i++) {
-            *(this->storage + pos + i) = *(this->storage + pos + i + 1);
-        }
-        this->num--;
-    }
+//     size_t find(type item) {
+//         for (size_t i = 0; i < this->num; i++) {
+//             if (item == *(this->storage + i))
+//                 return i;
+//         }
+//         return -1;
+//     }
 
-    void remove(type& item) {
-        if (!this->on)
-            return;
-        for (size_t i = 0; i < this->num; i++) {
-            if (*(this->storage + i) == item)
-                this->remove(i);
-        }
-    }
+//     void remove(size_t pos) {
+//         if (!this->on)
+//             return;
+//         if (pos >= this->num)
+//             return;
+//         memset(&*(this->storage + pos), 0, sizeof(type));
+//         for (size_t i = 0; i < this->num - 1; i++) {
+//             *(this->storage + pos + i) = *(this->storage + pos + i + 1);
+//         }
+//         this->num--;
+//     }
 
-    void copyfrom(vector<type> old) {
-        memset(this->storage, 0, this->num - 1);
-        this->num = 0;
-        for (size_t i = 0; i < old.size(); i++) {
-            this->push_back(old[i]);
-        }
-    }
+//     void remove(type& item) {
+//         if (!this->on)
+//             return;
+//         for (size_t i = 0; i < this->num; i++) {
+//             if (*(this->storage + i) == item)
+//                 this->remove(i);
+//         }
+//     }
 
-    type& operator[](size_t pos) { return *(this->storage + pos); }
+//     void copyfrom(vector<type> old) {
+//         memset(this->storage, 0, this->num - 1);
+//         this->num = 0;
+//         for (size_t i = 0; i < old.size(); i++) {
+//             this->push_back(old[i]);
+//         }
+//     }
 
-    type& at(size_t pos) { return *(this->storage + pos); }
+//     type& operator[](size_t pos) { return *(this->storage + pos); }
 
-    type& front() { return *this->storage; }
+//     type& at(size_t pos) { return *(this->storage + pos); }
 
-    type& back() { return *(this->storage + this->num - 1); }
+//     type& front() { return *this->storage; }
 
-    type* begin() {
-        if (this->storage == nullptr)
-            return nullptr;
-        return this->storage;
-    }
+//     type& back() { return *(this->storage + this->num - 1); }
 
-    type* end() {
-        if (this->storage == nullptr)
-            return nullptr;
-        return this->storage + this->num;
-    }
+//     type* begin() {
+//         if (this->storage == nullptr)
+//             return nullptr;
+//         return this->storage;
+//     }
 
-    type* data() { return this->data; }
+//     type* end() {
+//         if (this->storage == nullptr)
+//             return nullptr;
+//         return this->storage + this->num;
+//     }
 
-    const type* cbegin() {
-        if (this->storage == nullptr)
-            return nullptr;
-        return this->storage;
-    }
+//     type* data() { return this->data; }
 
-    const type* cend() {
-        if (this->storage == nullptr)
-            return nullptr;
-        return this->storage + this->num;
-    }
+//     const type* cbegin() {
+//         if (this->storage == nullptr)
+//             return nullptr;
+//         return this->storage;
+//     }
 
-    bool empty() { return this->num == 0; }
+//     const type* cend() {
+//         if (this->storage == nullptr)
+//             return nullptr;
+//         return this->storage + this->num;
+//     }
 
-    size_t size() { return this->num; }
+//     bool empty() { return this->num == 0; }
 
-    size_t max_size() { return this->cap; }
+//     size_t size() { return this->num; }
 
-    void resize(size_t size) {
-        if (!this->on)
-            this->init();
-        this->storage = allocator->realloc<type*>(this->storage, size * sizeof(type));
-        this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-        if (this->num > size)
-            this->num = size + 1;
-    }
+//     size_t max_size() { return this->cap; }
 
-    void expand(size_t size) {
-        if (!this->on)
-            this->init();
-        this->storage = allocator->realloc<type*>(this->storage, size * sizeof(type));
-        this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-    }
+//     void resize(size_t size) {
+//         if (!this->on)
+//             this->init();
+//         this->storage = allocator->realloc<type*>(this->storage, size * sizeof(type));
+//         this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//         if (this->num > size)
+//             this->num = size + 1;
+//     }
 
-    void insert(size_t pos, const type& item) {
-        if (!this->on)
-            this->init();
-        if (this->num < this->cap) {
-            for (size_t i = this->num - pos; i > 0; i--) {
-                *(this->storage + pos + i) = *(this->storage + pos + i - 1);
-            }
-            *(this->storage + pos) = item;
-            this->num++;
-        } else {
-            this->storage =
-                allocator->realloc<type*>(this->storage, (this->cap + 1) * sizeof(type));
-            this->cap = allocator->alloc_size(this->storage) / sizeof(type);
-            if (this->storage) {
-                for (size_t i = this->num - pos; i > 0; i--) {
-                    *(this->storage + pos + i) = *(this->storage + pos + i - 1);
-                }
-                *(this->storage + pos) = item;
-                this->num++;
-            }
-        }
-    }
+//     void expand(size_t size) {
+//         if (!this->on)
+//             this->init();
+//         this->storage = allocator->realloc<type*>(this->storage, size * sizeof(type));
+//         this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//     }
 
-    void reverse() {
-        if (this->num <= 1)
-            return;
-        for (size_t i = 0, j = this->num - 1; i < j; i++, j--) {
-            type c = *(this->storage + i);
-            *(this->storage + i) = *(this->storage + j);
-            *(this->storage + j) = c;
-        }
-    }
-};
+//     void insert(size_t pos, const type& item) {
+//         if (!this->on)
+//             this->init();
+//         if (this->num < this->cap) {
+//             for (size_t i = this->num - pos; i > 0; i--) {
+//                 *(this->storage + pos + i) = *(this->storage + pos + i - 1);
+//             }
+//             *(this->storage + pos) = item;
+//             this->num++;
+//         } else {
+//             this->storage =
+//                 allocator->realloc<type*>(this->storage, (this->cap + 1) * sizeof(type));
+//             this->cap = allocator->alloc_size(this->storage) / sizeof(type);
+//             if (this->storage) {
+//                 for (size_t i = this->num - pos; i > 0; i--) {
+//                     *(this->storage + pos + i) = *(this->storage + pos + i - 1);
+//                 }
+//                 *(this->storage + pos) = item;
+//                 this->num++;
+//             }
+//         }
+//     }
+
+//     void reverse() {
+//         if (this->num <= 1)
+//             return;
+//         for (size_t i = 0, j = this->num - 1; i < j; i++, j--) {
+//             type c = *(this->storage + i);
+//             *(this->storage + i) = *(this->storage + j);
+//             *(this->storage + j) = c;
+//         }
+//     }
+// };
 }  // namespace std
