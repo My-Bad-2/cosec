@@ -2,14 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-namespace std {
-template <typename T, typename U>
-struct pair {
-    T first;
-    U second;
-};
-}  // namespace std
+#include <utils>
 
 namespace kernel::memory::virt {
 enum Flags {

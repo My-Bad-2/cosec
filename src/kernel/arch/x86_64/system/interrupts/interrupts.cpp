@@ -149,7 +149,7 @@ extern "C" uint64_t interrupt_handler(uint64_t rsp) {
 namespace system::idt {
 interrupt_handler handlers[256];
 
-pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint) {
+std::pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint) {
     hint = std::max(hint, IRQ(0));
 
     using namespace kernel::drivers;

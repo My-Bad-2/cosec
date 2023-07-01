@@ -18,7 +18,7 @@ struct allocator {
     constexpr allocator() noexcept = default;
 
     template <typename U>
-    constexpr allocator(const allocator<U>& other) noexcept {}
+    constexpr allocator(const allocator<U>&) noexcept {}
 
     [[nodiscard]] constexpr Type* allocate(size_t size) {
         return static_cast<Type*>(::operator new(size * sizeof(Type)));

@@ -110,11 +110,11 @@ add_global_arguments([
 add_global_arguments(['-f', asm_format], language: 'nasm')
 
 add_global_arguments([
-    '-std=gnu++20',
+    '-std=gnu++2b',
     '-fno-rtti',
     '-fno-exceptions',
     '-fsized-deallocation',
-    '-Wno-used-parameter',
+    '-Wno-unused-parameter',
     '-Wno-frame-address',
 ], language : 'cpp')
 

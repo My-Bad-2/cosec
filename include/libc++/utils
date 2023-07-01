@@ -1,0 +1,97 @@
+#pragma once
+
+#include <cstdint>
+#include <type_traits>
+#include <utility>
+
+namespace std {
+template<typename T>
+constexpr uint32_t popcount(T x) noexcept {
+    return __builtin_popcount(x);
+};
+
+template <class Type1, class Type2>
+struct pair {
+    Type1 first;
+    Type2 second;
+
+    constexpr pair() : first(NULL), second(NULL) {}
+
+    constexpr pair(const Type1& x, const Type2& y) : first(x), second(y) {}
+
+    template <class U1 = Type1, class U2 = Type2>
+    constexpr pair(pair<U1, U2>& p) : first(p.first), second(p.second) {}
+
+    template <class U1 = Type1, class U2 = Type2>
+    constexpr pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
+
+    template <class U1 = Type1, class U2 = Type2>
+    constexpr pair(const pair<U1, U2>&& p) : first(p.first), second(p.second) {}
+
+    constexpr void swap(const pair& other) const noexcept {
+        using std::swap;
+        swap(first, other.first);
+        swap(second, other.second);
+    }
+
+    constexpr pair& operator=(const pair& other) {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    constexpr const pair& operator=(const pair& other) const {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    template <typename U1, typename U2>
+    constexpr pair& operator=(const pair<U1, U2>& other) {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    template <typename U1, typename U2>
+    constexpr pair& operator=(const pair<U1, U2>& other) const {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    template <typename U1, typename U2>
+    constexpr pair& operator=(const pair<U1, U2>&& other) {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    template <typename U1, typename U2>
+    constexpr pair& operator=(const pair<U1, U2>&& other) const {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    constexpr pair& operator=(pair&& other) const {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+
+    constexpr const pair& operator=(pair&& other) noexcept {
+        first = other.first;
+        second = other.second;
+
+        return *this;
+    }
+};
+};  // namespace std

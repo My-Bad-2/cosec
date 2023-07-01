@@ -1,6 +1,8 @@
 #include <kernel.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include <utils>
 #include <vector>
 
 #include <debug/log.hpp>
@@ -139,7 +141,7 @@ device::device(acpi_hpet_header_t* table)
                 (static_cast<uint64_t>(address.raw) << 32) | data.raw;
             this->regs->comparators[i].command |= (1 << 14);
             timer.int_mode = timer.INT_FSB;
-        } else if (ioapic::initialized && __builtin_popcount(gsi_mask) <= 24) {
+        } else if (ioapic::initialized && std::popcount(gsi_mask) <= 24) {
             if (gsi == 0xFFFFFFFF) {
                 for (size_t g = 31; g >= 0; g--) {
                     if (gsi_mask & (1 << g)) {

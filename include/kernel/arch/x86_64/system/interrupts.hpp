@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <functional>
 #include <utility>
+#include <utils>
 
 namespace system::idt {
 struct Regs {
@@ -18,12 +19,6 @@ struct Regs {
     uint64_t rsp;
     uint64_t ss;
 } __attribute__((packed));
-
-template <typename T, typename U>
-struct pair {
-    T first;
-    U second;
-};
 
 class interrupt_handler {
    private:
@@ -81,7 +76,7 @@ constexpr inline uint8_t IRQ(uint8_t num) {
     return num + 0x20;
 }
 
-pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint = IRQ(0));
+std::pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint = IRQ(0));
 
 extern interrupt_handler handlers[256];
 }  // namespace system::idt

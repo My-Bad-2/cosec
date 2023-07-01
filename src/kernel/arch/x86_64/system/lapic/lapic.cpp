@@ -1,13 +1,20 @@
 #include <lai/host.h>
+#include <stdint.h>
+
 #include <common/mmio.hpp>
-#include <cstdint>
+
 #include <drivers/acpi.hpp>
-#include <memory/virtual.hpp>
+
 #include <specs/acpi.hpp>
+
 #include <system/cpu.hpp>
 #include <system/lapic.hpp>
 #include <system/port.hpp>
-#include "memory/memory.hpp"
+
+#include <memory/virtual.hpp>
+#include <memory/memory.hpp>
+
+#include <time/time.hpp>
 
 namespace system::lapic {
 bool lapic::x2apic_check() {

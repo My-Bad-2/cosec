@@ -3,14 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <tuple>
-
-namespace std {
-template <typename T, typename U>
-struct pair {
-    T first;
-    U second;
-};
-}  // namespace std
+#include <utils>
 
 namespace system::ioapic {
 enum class delivery_mode : uint8_t {
