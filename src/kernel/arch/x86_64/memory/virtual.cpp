@@ -9,6 +9,7 @@
 #include <memory/virtual.hpp>
 
 #include <system/cpu.hpp>
+#include "limine.h"
 
 namespace kernel::memory::virt {
 enum {
@@ -66,9 +67,10 @@ pt_entry* pagemap::virt_to_pte(uint64_t virt_addr, bool allocate,
 
     pagetable *pml4, *pml3, *pml2, *pml1;
 
-    pml4 = (la57_request.response != nullptr)
-               ? get_next_lvl(this->toplvl, pml5_entry, allocate)
-               : this->toplvl;
+    pml4 =
+        (paging_mode_request.response->mode == LIMINE_PAGING_MODE_MAX)
+            ? get_next_lvl(this->toplvl, pml5_entry, allocate)
+            : this->toplvl;
     if (pml4 == nullptr) {
         return nullptr;
     }
@@ -295,7 +297,7 @@ uintptr_t flags_to_arch(size_t flags) {
 }
 
 bool is_canonical(uintptr_t addr) {
-    if (la57_request.response != nullptr) {
+    if (paging_mode_request.response->mode == LIMINE_PAGING_MODE_MAX) {
         return (addr <= 0x00FFFFFFFFFFFFFF) || (addr >= 0xFF00000000000000);
     }
 
@@ -322,8 +324,11 @@ static void destroy_level(pagetable* pml, size_t start, size_t end,
 }
 
 void destroy_pagemap(pagemap* map) {
-    destroy_level(map->toplvl, 0, 256,
-                  (la57_request.response != nullptr) ? 5 : 4);
+    destroy_level(
+        map->toplvl, 0, 256,
+        (paging_mode_request.response->mode == LIMINE_PAGING_MODE_MAX)
+            ? 5
+            : 4);
 }
 
 void arch_init() {

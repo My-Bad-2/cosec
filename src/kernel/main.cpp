@@ -29,10 +29,12 @@ limine_memmap_request memmap_request = {
     .response = nullptr,
 };
 
-limine_5_level_paging_request la57_request = {
-    .id = LIMINE_5_LEVEL_PAGING_REQUEST,
+limine_paging_mode_request paging_mode_request = {
+    .id = LIMINE_PAGING_MODE_REQUEST,
     .revision = 0,
     .response = nullptr,
+    .mode = LIMINE_PAGING_MODE_MAX,
+    .flags = 0,
 };
 
 limine_smp_request smp_request = {
@@ -61,7 +63,8 @@ limine_kernel_file_request kernel_file_request = {
 limine_kernel_address_request kernel_address_request = {
     .id = LIMINE_KERNEL_ADDRESS_REQUEST,
     .revision = 0,
-    .response = nullptr};
+    .response = nullptr,
+};
 
 extern "C" void _start() {
     arch::early_init();
