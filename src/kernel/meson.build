@@ -5,6 +5,8 @@ src = files(
 
     'cxx/support.cpp',
 
+    'console/console.cpp',
+
     'debug/log.cpp',
 
     'drivers/drivers.cpp',

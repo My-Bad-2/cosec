@@ -41,3 +41,4 @@ subprojects/printf
 subprojects/cxxshim
 subprojects/frigg
 subprojects/lai
+subprojects/limine_terminal

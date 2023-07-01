@@ -9,6 +9,7 @@
 #include <drivers/acpi.hpp>
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
+#include <console/console.hpp>
 
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
@@ -66,7 +67,17 @@ limine_kernel_address_request kernel_address_request = {
     .response = nullptr,
 };
 
+limine_efi_system_table_request efi_system_table_request = {
+    .id = LIMINE_EFI_SYSTEM_TABLE_REQUEST,
+    .revision = 0,
+    .response = nullptr,
+};
+
+bool uefi = false;
+
 extern "C" void _start() {
+    uefi = (efi_system_table_request.response != nullptr);
+
     arch::early_init();
 
     memory::init();
@@ -75,7 +86,10 @@ extern "C" void _start() {
     arch::init();
     drivers::init();
 
-    drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
+    console::init();
+
+    // drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
+    log::info << "Success\n";
 
     // asm volatile("div %ah"); // cause divide by zero error
 

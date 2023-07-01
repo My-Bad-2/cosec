@@ -125,7 +125,8 @@ deps = [
     dependency('printf'),
     dependency('cxxshim'),
     dependency('frigg'),
-    dependency('lai')
+    dependency('lai'),
+    dependency('limine_term'),
 ]
 
 inc_deps = []

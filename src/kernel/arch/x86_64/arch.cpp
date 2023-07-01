@@ -15,6 +15,8 @@
 #include <system/system.hpp>
 #include <time/time.hpp>
 
+#include <console/console.hpp>
+
 using namespace kernel::drivers;
 
 namespace kernel::arch {
@@ -46,10 +48,18 @@ uint64_t epoch() {
 size_t println(const char* str) {
     size_t length = strlen(str);
 
+    if (kernel::console::initialized) {
+        kernel::console::write(str);
+    }
+
     return serial::write(serial::COM1, str, length);
 }
 
 void printc(char c) {
+    if (kernel::console::initialized) {
+        kernel::console::printc(c);
+    }
+
     serial::putc(serial::COM1, c);
 }
 
