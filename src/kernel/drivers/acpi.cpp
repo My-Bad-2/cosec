@@ -4,22 +4,19 @@
 #include <lai/helpers/sci.h>
 #include <lai/host.h>
 
+#include <kernel.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <cstdint>
 #include <debug/log.hpp>
+
+#include <memory/memory.hpp>
 #include <memory/physical.hpp>
 #include <memory/virtual.hpp>
 
 #include <drivers/acpi.hpp>
-#include "acpispec/hw.h"
-#include "acpispec/tables.h"
-#include "kernel.h"
-#include "lai/internal-ns.h"
-#include "memory/memory.hpp"
-#include "specs/acpi.hpp"
 
 namespace kernel::drivers::acpi {
 acpi_fadt_t* fadt_header = nullptr;
@@ -156,13 +153,13 @@ void init() {
         rsdt = reinterpret_cast<acpi_rsdt*>(
             memory::to_higher_half(rsdp->xsdt_address));
 
-        log::info << "Found xsdt at " << rsdt << "\n";
+        log::debug << "\nFound xsdt at " << rsdt << "\n";
     } else {
         xsdt = false;
         rsdt = reinterpret_cast<acpi_rsdt*>(
             memory::to_higher_half(rsdp->rsdt_address));
 
-        log::info << "Found rsdt at " << rsdt << "\n";
+        log::debug << "\nFound rsdt at " << rsdt << "\n";
     }
 
     size_t entries =
@@ -202,7 +199,7 @@ void init() {
     lai_set_acpi_revision(rsdp->revision);
     lai_create_namespace();
 
-    log::info << "Initialized ACPI\n";
+    log::info << "\nInitialized ACPI!\n";
 }
 
 void enable(acpi_interrupt_model model) {

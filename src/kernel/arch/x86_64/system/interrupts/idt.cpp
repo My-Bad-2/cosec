@@ -3,7 +3,10 @@
 
 #include <system/gdt.hpp>
 #include <system/idt.hpp>
+#include <system/ioapic.hpp>
 #include <system/pic.hpp>
+
+#include <drivers/acpi.hpp>
 
 extern "C" uintptr_t __interrupt_vector[256];
 
@@ -24,12 +27,22 @@ void Entry::set(uintptr_t handler, uint8_t ist, uint8_t flags) {
     this->zero = 0;
 }
 
+using namespace kernel::drivers;
+
 void mask(uint8_t irq) {
-    pic::mask(irq);
+    if (ioapic::initialized && acpi::madt_header->legacy_pic()) {
+        ioapic::mask_irq(irq);
+    } else {
+        pic::mask(irq);
+    }
 }
 
 void unmask(uint8_t irq) {
-    pic::unmask(irq);
+    if (ioapic::initialized && acpi::madt_header->legacy_pic()) {
+        ioapic::unmask_irq(irq);
+    } else {
+        pic::unmask(irq);
+    }
 }
 
 void init() {

@@ -76,7 +76,7 @@ device::device(acpi_hpet_header_t* table)
     this->regs->main_counter = 0;
     this->legacy = (this->regs->cap >> 8) & 1;
 
-    log::debug << "Found HPET device " << table->hpet_number
+    log::debug << "\nFound HPET device " << table->hpet_number
                << ": Legacy replacement mode: "
                << (this->legacy ? "true\n" : "false\n");
     log::debug << " Timers:\n";
@@ -274,6 +274,6 @@ void init() {
 
     initialized = true;
 
-    log::info << "HPET intialized\n";
+    log::info << "\nIntialized HPET!\n";
 }
 }  // namespace kernel::drivers::hpet

@@ -195,6 +195,6 @@ void init() {
 
     initialized = true;
 
-    log::info << "Initialized IOAPIC\n";
+    log::info << "Initialized IOAPIC!\n";
 }
 }  // namespace system::ioapic

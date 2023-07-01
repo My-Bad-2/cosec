@@ -58,7 +58,7 @@ void init() {
 
     unmask((vector = _vector) - 0x20);
 
-    log::info << "PIT initialized\n";
+    log::info << "Initialized PIT!\n";
 }
 
 void handler() {

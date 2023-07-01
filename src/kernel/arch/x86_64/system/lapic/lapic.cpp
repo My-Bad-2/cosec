@@ -4,7 +4,7 @@
 #include <common/mmio.hpp>
 
 #include <drivers/acpi.hpp>
-
+#include <debug/log.hpp>
 #include <specs/acpi.hpp>
 
 #include <system/cpu.hpp>
@@ -87,6 +87,8 @@ void lapic::init() {
 
     this->write(LAPIC_TPR, 0);
     this->write(LAPIC_SVR, 0xFF | (1 << 8));
+
+    log::info << "Initialized LAPIC!\n";
 }
 
 void lapic::ipi(uint32_t flags, uint32_t id) {

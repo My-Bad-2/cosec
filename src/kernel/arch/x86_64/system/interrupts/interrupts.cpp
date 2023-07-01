@@ -3,6 +3,7 @@
 
 #include <system/idt.hpp>
 #include <system/interrupts.hpp>
+#include <system/lapic.hpp>
 #include <system/pic.hpp>
 
 #include <algorithm>
@@ -137,9 +138,6 @@ extern "C" uint64_t interrupt_handler(uint64_t rsp) {
         if (handler.eoi_first == false) {
             eoi(regs->int_no);
         }
-    } else if (regs->int_no == 0xF0) {
-        log::debug
-            << "Non-maskable Interrupt from APIC(Possible Hardware error).\n";
     }
 
     return rsp;

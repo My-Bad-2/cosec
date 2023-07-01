@@ -82,6 +82,6 @@ void init() {
     port::out8(PIC1_DATA, a);
     port::out8(PIC2_DATA, b);
 
-    log::info << "Initialized PIC\n";
+    log::info << "Initialized PIC!\n";
 }
 }  // namespace system::pic

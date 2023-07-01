@@ -231,7 +231,7 @@ void enumerate() {
                       "mechanism\n";
         enumerate_legacy();
     } else {
-        log::debug << "Found MCFG\n";
+        log::debug << "\nFound MCFG\n";
         enumerate_mcfg(mcfg_table);
     }
 }

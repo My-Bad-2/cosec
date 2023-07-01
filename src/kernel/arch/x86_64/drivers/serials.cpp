@@ -10,11 +10,11 @@ namespace kernel::drivers::serial {
 using namespace system::port;
 
 void write_reg(com_port port, com_register reg, uint8_t val) {
-    out8(port + reg, val);
+    out8(static_cast<uint16_t>(port) + static_cast<uint16_t>(reg), val);
 }
 
 uint8_t read_reg(com_port port, com_register reg) {
-    return in8(port + reg);
+    return in8(static_cast<uint16_t>(port) + static_cast<uint16_t>(reg));
 }
 
 bool can_read(com_port port) {
