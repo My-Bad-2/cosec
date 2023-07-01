@@ -1,5 +1,5 @@
 project('cosec', ['cpp', 'c', 'nasm'],
-  version : '0.1',
+  version : 'alpha.0.1',
   default_options : ['warning_level=2'],
   license: 'MIT')
 
@@ -88,7 +88,9 @@ incs = [
 ]
 
 macros = [
-    '-DDEBUG=' + (get_option('lldb_debug') ? '1' : '0')
+    '-DDEBUG=' + (get_option('lldb_debug') ? '1' : '0'),
+    '-DPROJ_VERSION="@0@"'.format(meson.project_version()),
+    '-DPROJ_NAME="@0@"'.format(meson.project_name()),
 ]
 
 warnings = [

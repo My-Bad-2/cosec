@@ -12,6 +12,7 @@ extern limine_kernel_file_request kernel_file_request;
 extern limine_kernel_address_request kernel_address_request;
 extern limine_rsdp_request rsdp_request;
 extern limine_efi_system_table_request efi_system_table_request;
+extern limine_boot_time_request boot_time_request;
 
 extern bool uefi;
 

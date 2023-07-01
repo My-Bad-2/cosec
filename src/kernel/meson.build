@@ -1,5 +1,6 @@
 src = files(
     'main.cpp',
+    'sys_info.cpp',
 
     'common/mmio.cpp',
 

@@ -10,6 +10,7 @@
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
 #include <console/console.hpp>
+#include <sys_info.hpp>
 
 namespace kernel {
 limine_framebuffer_request framebuffer_request = {
@@ -73,6 +74,12 @@ limine_efi_system_table_request efi_system_table_request = {
     .response = nullptr,
 };
 
+limine_boot_time_request boot_time_request = {
+    .id = LIMINE_BOOT_TIME_REQUEST,
+    .revision = 0,
+    .response = nullptr,
+};
+
 bool uefi = false;
 
 extern "C" void _start() {
@@ -89,7 +96,7 @@ extern "C" void _start() {
     console::init();
 
     // drivers::fb::plot_line({400, 300}, {100, 200}, 0XFFC0CB);
-    log::info << "Success\n";
+    get_sys_info();
 
     // asm volatile("div %ah"); // cause divide by zero error
 
