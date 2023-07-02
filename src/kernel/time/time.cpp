@@ -23,7 +23,7 @@ void timer_handler(size_t ns) {
 }
 
 uint64_t time_ns() {
-    return (arch::time_ns() == 0 ? monotonic.to_ns() : arch::time_ns());
+    return ((arch::time_ns() == 0) ? monotonic.to_ns() : arch::time_ns());
 }
 
 uint64_t time_ms() {
