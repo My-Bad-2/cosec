@@ -56,13 +56,130 @@ void invlpg(uintptr_t addr) {
     asm volatile("invlpg (%0)" ::"r"(addr));
 }
 
+uintptr_t read_cr0() {
+    uintptr_t value;
+    asm volatile("mov %%cr0, %0" : "=r"(value)::"memory");
+    return value;
+}
+
+uintptr_t read_cr2() {
+    uintptr_t value;
+    asm volatile("mov %%cr2, %0" : "=r"(value)::"memory");
+    return value;
+}
+
 uintptr_t read_cr3() {
     uintptr_t value;
     asm volatile("mov %%cr3, %0" : "=r"(value)::"memory");
     return value;
 }
 
+uintptr_t read_cr4() {
+    uintptr_t value;
+    asm volatile("mov %%cr4, %0" : "=r"(value)::"memory");
+    return value;
+}
+
+void write_cr0(uintptr_t value) {
+    asm volatile("mov %0, %%cr0" ::"r"(value) : "memory");
+}
+
+void write_cr2(uintptr_t value) {
+    asm volatile("mov %0, %%cr2" ::"r"(value) : "memory");
+}
+
 void write_cr3(uintptr_t value) {
     asm volatile("mov %0, %%cr3" ::"r"(value) : "memory");
+}
+
+void write_cr4(uintptr_t value) {
+    asm volatile("mov %0, %%cr4" ::"r"(value) : "memory");
+}
+
+uint64_t read_xcr(uint32_t reg) {
+    uint32_t eax, edx;
+
+    asm volatile("xgetbv" : "=a"(eax), "=d"(edx) : "c"(reg) : "memory");
+
+    return eax | (static_cast<uint64_t>(edx) << 32);
+}
+
+void write_xcr(uint32_t reg, uint64_t value) {
+    uint32_t edx = value >> 32;
+    uint32_t eax = static_cast<uint32_t>(value);
+
+    asm volatile("xsetbv" ::"a"(eax), "d"(edx), "c"(reg) : "memory");
+}
+
+static uint64_t rfbm = ~0;
+static uint32_t rfbm_low = rfbm & 0xFFFFFFFF;
+static uint32_t rfbm_high = (rfbm >> 32) & 0xFFFFFFFF;
+
+void xsave(void* ctx) {
+    asm volatile("xsave64 (%0)" ::"r"(ctx), "a"(rfbm_low), "d"(rfbm_high)
+                 : "memory");
+}
+
+void xrstor(void* ctx) {
+    asm volatile("xrstor64 (%0)" ::"r"(ctx), "a"(rfbm_low), "d"(rfbm_high)
+                 : "memory");
+}
+
+void fxsave(void* ctx) {
+    asm volatile("fxsave (%0)" ::"r"(ctx) : "memory");
+}
+
+void fxrstor(void* ctx) {
+    asm volatile("fxrstor (%0)" ::"r"(ctx) : "memory");
+}
+
+uintptr_t get_gs() {
+    return rdmsr(0xC0000101);
+}
+
+uintptr_t get_kernel_gs() {
+    return rdmsr(0xC0000102);
+}
+
+void set_gs(uintptr_t address) {
+    wrmsr(0xC0000101, address);
+}
+
+void set_kernel_gs(uintptr_t address) {
+    wrmsr(0xC0000102, address);
+}
+
+uintptr_t get_fs() {
+    return rdmsr(0xC0000100);
+}
+
+void set_fs(uintptr_t address) {
+    wrmsr(0xC0000100, address);
+}
+
+void enable_interrupts() {
+    asm volatile("sti");
+}
+
+void disable_interrupts() {
+    asm volatile("cli");
+}
+
+bool interrupt_state() {
+    uint64_t flags;
+    asm volatile("pushfq; pop %0" : "=rm"(flags)::"memory");
+    return flags & (1 << 9);
+}
+
+void halt() {
+    asm volatile("hlt");
+}
+
+void pause() {
+    asm volatile("pause");
+}
+
+void fninit() {
+    asm volatile("fninit");
 }
 }  // namespace system::cpu

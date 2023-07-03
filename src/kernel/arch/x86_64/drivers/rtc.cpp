@@ -15,40 +15,19 @@ uint8_t read(uint8_t write) {
     return bcd_to_bin(in8(0x71));
 }
 
-uint8_t century() {
-    if (acpi::fadt_header && acpi::fadt_header->century == 0) {
-        return 20;
+uint8_t get_time(cmos_regs regs) {
+    if (regs == CMOS_RTC_CENURY) {
+        if (acpi::fadt_header && acpi::fadt_header->century == 0) {
+            return 20;
+        }
     }
 
-    return read(0x32);
-}
-
-uint8_t year() {
-    return read(0x09);
-}
-
-uint8_t month() {
-    return read(0x08);
-}
-
-uint8_t day() {
-    return read(0x07);
-}
-
-uint8_t hour() {
-    return read(0x04);
-}
-
-uint8_t minute() {
-    return read(0x02);
-}
-
-uint8_t second() {
-    return read(0x00);
+    return read(regs);
 }
 
 uint8_t time() {
-    return hour() * 3600 + minute() * 60 + second();
+    return get_time(CMOS_RTC_HOUR) * 3600 + get_time(CMOS_RTC_MINUTE) * 60 +
+           get_time(CMOS_RTC_SECOND);
 }
 
 void sleep(uint64_t sec) {

@@ -40,8 +40,10 @@ uint64_t time_ns() {
 
 uint64_t epoch() {
     using namespace kernel::drivers::rtc;
-    return ::epoch(second(), minute(), hour(), day(), month(), year(),
-                   century());
+    return ::epoch(get_time(CMOS_RTC_SECOND), get_time(CMOS_RTC_MINUTE),
+                   get_time(CMOS_RTC_HOUR), get_time(CMOS_RTC_DAY),
+                   get_time(CMOS_RTC_MONTH), get_time(CMOS_RTC_YEAR),
+                   get_time(CMOS_RTC_CENURY));
 }
 }  // namespace kernel::arch
 

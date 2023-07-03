@@ -1,5 +1,6 @@
 src += files(
     'system/cpu/cpu.cpp',
+    'system/cpu/simd.cpp',
 
     'system/gdt/gdt.asm',
     'system/gdt/gdt.cpp',
@@ -9,6 +10,7 @@ src += files(
     'system/interrupts/interrupts.asm',
     'system/interrupts/interrupts.cpp',
     'system/interrupts/pic.cpp',
+    
     'system/lapic/lapic.cpp',
     'system/ioapic/ioapic.cpp',
 
