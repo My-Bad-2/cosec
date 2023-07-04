@@ -1,11 +1,10 @@
+#include <arch.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <debug/log.hpp>
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
 #include <memory/virtual.hpp>
-#include "kernel.h"
-#include "limine.h"
 
 namespace kernel::memory::virt {
 pagemap* kernel_pagemap = nullptr;
@@ -28,8 +27,8 @@ void init() {
             log::error << "Can not map pagemap at address " << address << "\n";
 
             while (true) {
-                asm("cli");
-                asm("hlt");
+                disable_interrupts();
+                halt();
             }
         }
 
@@ -38,8 +37,8 @@ void init() {
             log::error << "Can not map pagemap at address " << address << "\n";
 
             while (true) {
-                asm("cli");
-                asm("hlt");
+                disable_interrupts();
+                halt();
             }
         }
     }
@@ -78,8 +77,8 @@ void init() {
                            << "\n";
 
                 while (true) {
-                    asm("cli");
-                    asm("hlt");
+                    disable_interrupts();
+                    halt();
                 }
             }
 
@@ -91,8 +90,8 @@ void init() {
                            << "\n";
 
                 while (true) {
-                    asm("cli");
-                    asm("hlt");
+                    disable_interrupts();
+                    halt();
                 }
             }
         }
@@ -112,8 +111,8 @@ void init() {
                            << "\n";
 
                 while (true) {
-                    asm("cli");
-                    asm("hlt");
+                    disable_interrupts();
+                    halt();
                 }
             }
 
@@ -124,8 +123,8 @@ void init() {
                            << "\n";
 
                 while (true) {
-                    asm("cli");
-                    asm("hlt");
+                    disable_interrupts();
+                    halt();
                 }
             }
         }
@@ -143,8 +142,8 @@ void init() {
             log::error << "Can not map pagemap at address " << address << "\n";
 
             while (true) {
-                asm("cli");
-                asm("hlt");
+                disable_interrupts();
+                halt();
             }
         }
     }

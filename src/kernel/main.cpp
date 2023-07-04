@@ -5,11 +5,11 @@
 #include <kernel.h>
 #include <arch.hpp>
 
+#include <console/console.hpp>
 #include <debug/log.hpp>
 #include <drivers/acpi.hpp>
 #include <drivers/drivers.hpp>
 #include <memory/memory.hpp>
-#include <console/console.hpp>
 #include <sys_info.hpp>
 
 namespace kernel {
@@ -100,6 +100,6 @@ extern "C" void _start() {
 
     // asm volatile("div %ah"); // cause divide by zero error
 
-    asm volatile("hlt");
+    halt();
 }
 }  // namespace kernel

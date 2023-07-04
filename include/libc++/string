@@ -1,0 +1,8 @@
+#pragma once
+
+#include <allocator>
+#include <frg/string.hpp>
+
+namespace std {
+using string = frg::string<frigg_allocator<char>>;
+}

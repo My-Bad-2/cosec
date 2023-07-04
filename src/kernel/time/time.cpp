@@ -33,14 +33,14 @@ uint64_t time_ms() {
 void nsleep(uint64_t ns) {
     uint64_t target = time_ns() + ns;
     while (time_ns() < target) {
-        asm volatile("pause");
+        pause();
     }
 }
 
 void msleep(uint64_t ms) {
     uint64_t target = time_ms() + ms;
     while (time_ms() < target) {
-        asm volatile("pause");
+        pause();
     }
 }
 }  // namespace kernel::time
