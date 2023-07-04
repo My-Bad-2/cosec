@@ -1,19 +1,22 @@
-#include <cstdint>
 #include <debug/log.hpp>
 #include <memory/bitmap.hpp>
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
 
+#include <stdint.h>
 #include <stddef.h>
 #include <string.h>
 
 #include <algorithm>
+#include <mutex>
+#include "arch.hpp"
 #include <kernel.h>
 
 namespace kernel::memory::physical {
 static uintptr_t mem_usable_top = 0;
 static size_t last_index = 0;
 static Bitmap bitmap;
+static std::mutex lock;
 
 size_t usable_mem = 0;
 size_t total_mem = 0;
@@ -39,6 +42,7 @@ size_t free() {
 
 void* alloc_impl(size_t count, size_t limit) {
     size_t index = 0;
+    // std::unique_lock guard(lock);
 
     while (last_index < limit) {
         if (!bitmap[last_index++]) {
@@ -60,6 +64,8 @@ void* alloc_impl(size_t count, size_t limit) {
 }
 
 void* alloc(size_t count) {
+    std::unique_lock guard(lock);
+    
     if (count == 0) {
         return nullptr;
     }
@@ -76,8 +82,8 @@ void* alloc(size_t count) {
             log::warn << "Memory Manager: Out of Memory\n";
 
             while (true) {
-                asm("cli");
-                asm("hlt");
+                disable_interrupts();
+                halt();
             }
         }
     }
@@ -93,6 +99,7 @@ void free(void* ptr, size_t count) {
         return;
     }
 
+    std::unique_lock guard(lock);
     uintptr_t page = reinterpret_cast<uintptr_t>(ptr) / PAGE_SIZE;
 
     for (size_t i = page; i < (page + count); i++) {

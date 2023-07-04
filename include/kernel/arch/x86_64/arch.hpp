@@ -9,6 +9,7 @@
 #define disable_interrupts system::cpu::disable_interrupts
 #define interrupt_state system::cpu::interrupt_state
 #define halt system::cpu::halt
+#define interrupt_toggle system::cpu::interrupt_toggle
 
 namespace kernel::arch {
 void early_init();

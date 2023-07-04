@@ -1,14 +1,17 @@
 #pragma once
 
 #include <stdint.h>
-#include <frg/array.hpp>
+
 #include <drivers/acpi.hpp>
-#include <frg/array.hpp>
-#include <functional>
+#include <mutex>
 #include <system/cpu.hpp>
+#include <system/interrupts.hpp>
+
+#include <frg/array.hpp>
+
 #include <utility>
-#include "specs/acpi.hpp"
-#include "system/interrupts.hpp"
+#include <functional>
+#include <tasking/lock.hpp>
 
 namespace kernel::drivers::hpet {
 enum modes {
@@ -40,6 +43,8 @@ class comparator {
     friend class device;
 
    private:
+   irq_lock lock;
+
     device* device;
     uint8_t num;
 
@@ -66,20 +71,23 @@ class comparator {
    public:
     template <typename Func, typename... Args>
     bool start_timer(uint64_t ns, modes mode, Func&& func, Args&&... args) {
-        if(this->int_mode == INT_NONE) {
+        if (this->int_mode == INT_NONE) {
             return false;
         }
 
-        if(mode == PERIODIC && this->periodic == false) {
+        std::unique_lock guard(this->lock);
+
+        if (mode == PERIODIC && this->periodic == false) {
             return false;
         }
 
-        if(static_cast<bool>(this->func) != false) {
+        if (static_cast<bool>(this->func) != false) {
             return false;
         }
 
         this->mode = mode;
-        this->func = [func = std::forward<Func>(func), ...args = std::forward<Args>(args)] mutable {
+        this->func = [func = std::forward<Func>(func),
+                      ... args = std::forward<Args>(args)] mutable {
             func(args...);
         };
 
@@ -87,9 +95,7 @@ class comparator {
         return true;
     }
 
-    inline bool supports_periodic() {
-        return this->periodic;
-    }
+    inline bool supports_periodic() { return this->periodic; }
 
     void cancel_timer();
 };
@@ -97,7 +103,7 @@ class comparator {
 class device {
     friend class comparator;
 
-    private:
+   private:
     volatile hpet* regs;
 
     uint8_t comp_count;
@@ -110,7 +116,7 @@ class device {
     void start();
     void stop();
 
-    public:
+   public:
     device(acpi_hpet_header_t* table);
 
     void nsleep(uint64_t ns);
@@ -124,6 +130,7 @@ extern std::vector<comparator*> comparators;
 extern std::vector<device*> devices;
 
 extern bool initialized;
+extern irq_lock lock;
 
 void nsleep(uint64_t ns);
 void msleep(uint64_t ms);
@@ -131,14 +138,17 @@ void msleep(uint64_t ms);
 uint64_t time_ns();
 uint64_t time_ms();
 
-template<typename Func, typename... Args>
-static comparator* start_timer(uint64_t ns, modes mode, Func&& func, Args&&... args) {
-    for(auto& comp : comparators) {
-        if(mode == PERIODIC && comp->supports_periodic() == false) {
+template <typename Func, typename... Args>
+static comparator* start_timer(uint64_t ns, modes mode, Func&& func,
+                               Args&&... args) {
+    std::unique_lock guard(lock);
+    
+    for (auto& comp : comparators) {
+        if (mode == PERIODIC && comp->supports_periodic() == false) {
             continue;
         }
 
-        if(comp->start_timer(ns, mode, func, args...)) {
+        if (comp->start_timer(ns, mode, func, args...)) {
             return comp;
         }
     }

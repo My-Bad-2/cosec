@@ -1,0 +1,191 @@
+#pragma once
+
+#include <algorithm>
+#include <arch.hpp>
+#include <atomic>
+#include <memory>
+#include <utility>
+
+namespace std {
+class ticket_lock {
+   private:
+    std::atomic<size_t> m_next_ticket;
+    std::atomic<size_t> m_serving_ticket;
+
+   public:
+    constexpr ticket_lock() : m_next_ticket(0), m_serving_ticket(0) {}
+
+    ticket_lock(const ticket_lock&) = delete;
+    ticket_lock& operator=(const ticket_lock&) = delete;
+
+    void lock() {
+        size_t ticket =
+            this->m_next_ticket.fetch_add(1, std::memory_order_relaxed);
+        while (this->m_serving_ticket.load(std::memory_order_acquire) !=
+               ticket) {
+            pause();
+        }
+    }
+
+    bool is_locked() {
+        size_t current = this->m_serving_ticket.load(std::memory_order_relaxed);
+        size_t next = this->m_next_ticket.load(std::memory_order_relaxed);
+        return current != next;
+    }
+
+    void unlock() {
+        if (!this->is_locked()) {
+            return;
+        }
+
+        size_t current = this->m_serving_ticket.load(std::memory_order_relaxed);
+        this->m_serving_ticket.store(current + 1, std::memory_order_relaxed);
+    }
+
+    bool try_lock() {
+        if (this->is_locked()) {
+            return false;
+        }
+
+        this->lock();
+        return true;
+    }
+};
+
+using mutex = ticket_lock;
+
+struct defer_lock_t {
+    explicit defer_lock_t() = default;
+};
+
+struct try_to_lock_t {
+    explicit try_to_lock_t() = default;
+};
+
+struct adopt_lock_t {
+    explicit adopt_lock_t() = default;
+};
+
+inline constexpr defer_lock_t defer_lock{};
+inline constexpr try_to_lock_t try_to_lock{};
+inline constexpr adopt_lock_t adopt_lock{};
+
+template <typename T>
+class unique_lock {
+   private:
+    T* m_mutex;
+    bool m_locked;
+
+   public:
+    using mutex_type = T;
+
+    unique_lock() : m_mutex(nullptr), m_locked(false) {}
+
+    unique_lock(unique_lock&& other) noexcept
+        : m_mutex(nullptr), m_locked(false) {
+        this->swap(other);
+    }
+
+    explicit unique_lock(mutex_type& m)
+        : m_mutex(addressof(m)), m_locked(true) {
+        m.lock();
+    }
+
+    unique_lock(mutex_type& m, defer_lock_t t) noexcept
+        : m_mutex(addressof(m)), m_locked(false) {}
+
+    unique_lock(mutex_type& m, try_to_lock_t t)
+        : m_mutex(addressof(m)), m_locked(true) {
+        m.try_lock();
+    }
+
+    unique_lock(mutex_type& m, adopt_lock_t t)
+        : m_mutex(addressof(m)), m_locked(true) {}
+
+    ~unique_lock() {
+        if (this->m_locked) {
+            this->m_mutex->unlock();
+        }
+    }
+
+    unique_lock& operator=(unique_lock&& other) {
+        if (this->m_locked) {
+            this->unlock();
+        }
+
+        this->swap(other);
+        return *this;
+    }
+
+    void lock() {
+        if (this->m_mutex) {
+            this->m_mutex->lock();
+            this->m_locked = true;
+        }
+    }
+
+    bool try_lock() {
+        if (this->mutex) {
+            bool ret = this->m_mutex->try_lock();
+
+            if (ret) {
+                this->m_locked = true;
+            }
+
+            return ret;
+        }
+
+        return false;
+    }
+
+    void unlock() {
+        if (this->m_mutex) {
+            this->m_mutex->unlock();
+            this->m_locked = false;
+        }
+    }
+
+    void swap(unique_lock& other) noexcept {
+        using std::swap;
+        swap(this->m_mutex, other.m_mutex);
+        swap(this->m_locked, other.m_locked);
+    }
+
+    mutex_type* release() noexcept {
+        mutex_type* ret = this->m_mutex;
+
+        this->m_mutex = nullptr;
+        this->m_locked = false;
+
+        return ret;
+    }
+
+    mutex_type* mutex() const noexcept { return this->m_mutex; }
+
+    bool owns_lock() const noexcept { return this->m_locked; }
+
+    explicit operator bool() const noexcept { return this->owns_lock(); }
+
+    friend void swap(unique_lock& lhs, unique_lock& rhs) noexcept {
+        return lhs.swap(rhs);
+    }
+};
+
+template <typename Lock1, typename Lock2>
+void lock(Lock1& l1, Lock2& l2) {
+    while (true) {
+        unique_lock<Lock1> u1(l1);
+        unique_lock<Lock2> u2(l2);
+
+        if (l2.try_lock()) {
+            u1.release();
+            break;
+        }
+
+        if (l1.try_lock()) {
+            u2.release();
+            break;
+        }
+    }
+}
+}  // namespace std

@@ -122,11 +122,12 @@ void xrstor(void* ctx);
 void fxsave(void* ctx);
 void fxrstor(void* ctx);
 
+void halt();
+void pause();
 bool interrupt_state();
 void enable_interrupts();
 void disable_interrupts();
-void halt();
-void pause();
+void interrupt_toggle(bool status);
 
 void fninit();
 }  // namespace system::cpu

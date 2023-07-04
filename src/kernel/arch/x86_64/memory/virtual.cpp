@@ -138,7 +138,7 @@ static uintptr_t cache_to_flags(Caching cache, bool large_pages) {
     return ret;
 }
 
-uintptr_t pagemap::map(uintptr_t virt_addr, uintptr_t phys_addr, size_t flags,
+uintptr_t pagemap::map_nolock(uintptr_t virt_addr, uintptr_t phys_addr, size_t flags,
                        Caching cache) {
     auto map_one = [this](uintptr_t virt_addr, uintptr_t phys_addr,
                           size_t flags, Caching cache, size_t psize) {
@@ -178,7 +178,7 @@ uintptr_t pagemap::map(uintptr_t virt_addr, uintptr_t phys_addr, size_t flags,
     return map_one(virt_addr, phys_addr, flags, cache, psize);
 }
 
-bool pagemap::unmap(uintptr_t virt_addr, size_t flags) {
+bool pagemap::unmap_nolock(uintptr_t virt_addr, size_t flags) {
     auto unmap_one = [this](uintptr_t virt_addr, size_t psize) {
         pt_entry* pml_entry = this->virt_to_pte(virt_addr, false, psize);
 

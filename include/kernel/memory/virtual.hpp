@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <mutex>
 #include <utils>
 
 namespace kernel::memory::virt {
@@ -86,6 +87,8 @@ struct pagemap {
     size_t lpage_size = 0;
     size_t page_size = 0;
 
+    std::mutex lock;
+
     inline size_t get_psize(size_t flags) {
         size_t psize = this->page_size;
 
@@ -100,10 +103,24 @@ struct pagemap {
         return psize;
     }
 
-    uintptr_t map(uintptr_t virt_addr, uintptr_t phys_addr,
-                  size_t flags = default_flags,
-                  Caching cache = default_caching);
-    bool unmap(uintptr_t virt_addr, size_t flags = 0);
+    uintptr_t map_nolock(uintptr_t virt_addr, uintptr_t phys_addr,
+                         size_t flags = default_flags,
+                         Caching cache = default_caching);
+    bool unmap_nolock(uintptr_t virt_addr, size_t flags = 0);
+
+    inline bool map(uintptr_t virt_addr, uintptr_t phys_addr,
+                    size_t flags = default_flags,
+                    Caching cache = default_caching) {
+        std::unique_lock guard(this->lock);
+
+        return this->map_nolock(virt_addr, phys_addr, flags, cache);
+    }
+
+    inline bool unmap(uintptr_t virt_addr, size_t flags) {
+        std::unique_lock guard(this->lock);
+
+        return this->unmap_nolock(virt_addr, flags);
+    }
 
     bool set_flags(uintptr_t virt_addr, size_t flags = 0,
                    Caching cache = default_caching);

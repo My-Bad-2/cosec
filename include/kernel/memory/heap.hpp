@@ -3,9 +3,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <frg/manual_box.hpp>
+#include <mutex>
 
 namespace kernel::memory::heap {
 struct Slab {
+    std::mutex lock;
     uintptr_t first_free;
     size_t entry_size;
 
@@ -25,6 +27,8 @@ struct Big_alloc_meta {
 
 class Slab_alloc {
    private:
+    std::mutex lock;
+    
     Slab* get_slab(size_t size);
 
     void* big_malloc(size_t size);

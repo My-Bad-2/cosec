@@ -166,7 +166,7 @@ void disable_interrupts() {
 }
 
 bool interrupt_state() {
-    uint64_t flags;
+    uint64_t flags = 0;
     asm volatile("pushfq; pop %0" : "=rm"(flags)::"memory");
     return flags & (1 << 9);
 }
@@ -181,5 +181,13 @@ void pause() {
 
 void fninit() {
     asm volatile("fninit");
+}
+
+void interrupt_toggle(bool status) {
+    if (status) {
+        enable_interrupts();
+    } else {
+        disable_interrupts();
+    }
 }
 }  // namespace system::cpu

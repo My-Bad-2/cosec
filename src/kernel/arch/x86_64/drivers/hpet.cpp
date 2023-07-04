@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <mutex>
 #include <utils>
 #include <vector>
 
@@ -19,12 +20,15 @@
 #include <system/ioapic.hpp>
 
 #include <time/time.hpp>
+#include "tasking/lock.hpp"
 
 namespace kernel::drivers::hpet {
 std::vector<comparator*> comparators;
 std::vector<device*> devices;
 
 bool initialized = false;
+
+irq_lock lock;
 
 void comparator::_start_timer(uint64_t ns) {
     this->device->stop();
@@ -49,6 +53,8 @@ void comparator::cancel_timer() {
     if (this->int_mode == INT_NONE) {
         return;
     }
+
+    std::unique_lock guard(this->lock);
 
     auto& comp = this->device->regs->comparators[this->num];
     comp.command &= ~(1 << 2);
@@ -116,6 +122,8 @@ device::device(acpi_hpet_header_t* table)
         if (timer.fsb) {
             auto [handler, vector] = idt::allocate_handler();
             handler.set([this, &timer](idt::Regs*) {
+                std::unique_lock guard(timer.lock);
+                
                 if (static_cast<bool>(timer.func) == false) {
                     return;
                 }
@@ -160,6 +168,7 @@ device::device(acpi_hpet_header_t* table)
                     for (size_t i = 0; i < this->comp_count; i++) {
                         if (this->regs->ist & (1 << i)) {
                             comparator& timer = this->comps[i];
+                            std::unique_lock guard(timer.lock);
 
                             if (static_cast<bool>(timer.func) == false) {
                                 return;

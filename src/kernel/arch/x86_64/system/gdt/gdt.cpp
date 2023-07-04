@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <debug/log.hpp>
 #include <system/gdt.hpp>
+#include <mutex>
 
 // external asm function helper
 extern "C" {
@@ -11,6 +12,7 @@ namespace system::gdt {
 static Tss tss = {0, {}, 0, {}, 0, 0, 0, 0};
 static Gdt gdt = {};
 static Descriptor desc = {sizeof(Gdt) - 1, reinterpret_cast<uint64_t>(&gdt)};
+static std::mutex lock;
 
 void Entry::set(uint32_t base, uint32_t limit, uint8_t granularity,
                 uint8_t flags) {
@@ -35,6 +37,8 @@ void Tss_Entry::set(uintptr_t tss) {
 }
 
 void init() {
+    std::unique_lock guard(lock);
+    
     gdt.entries[0].set();
 
     gdt.entries[GDT_KERNEL_CODE].set(

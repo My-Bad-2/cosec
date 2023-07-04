@@ -7,6 +7,7 @@
 #include <memory/heap.hpp>
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
+#include <mutex>
 
 namespace kernel::memory::heap {
 frg::manual_box<Slab_alloc> allocator;
@@ -34,6 +35,8 @@ void Slab::init(size_t size) {
 }
 
 void* Slab::alloc() {
+    std::unique_lock guard(this->lock);
+
     if (this->first_free == 0) {
         this->init(this->entry_size);
     }
@@ -49,6 +52,8 @@ void Slab::free(void* ptr) {
     if (ptr == nullptr) {
         return;
     }
+
+    std::unique_lock guard(this->lock);
 
     auto new_head = static_cast<uint64_t*>(ptr);
     new_head[0] = this->first_free;
