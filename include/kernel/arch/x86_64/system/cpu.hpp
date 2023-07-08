@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <system/gdt.hpp>
 #include <system/idt.hpp>
+#include <system/tss.hpp>
+#include <system/lapic.hpp>
+#include <errno.h>
 
 namespace system::cpu {
 enum xcr0_bit {
@@ -130,4 +133,27 @@ void disable_interrupts();
 void interrupt_toggle(bool status);
 
 void fninit();
+
+struct cpu_t {
+    cpu_t* self; // pointer to this structure
+    uint64_t id; // APIC/CPU id
+
+    uint64_t arch_id = 0;
+
+    tss::tss_t tss __attribute__((aligned(16)));
+
+    gdt::gdt_t* gdt; // gdt
+    gdt::gdt_descriptor_t gdt_ptr;
+    idt::idt_descriptor_t idt_ptr;
+
+    lapic::lapic lapic;
+    uint64_t lapic_ticks_per_ms;
+    
+    size_t fpu_size;
+    void (*fpu_save)(void*);
+    void (*fpu_load)(void*);
+
+    errno_t error;
+    volatile bool is_up = false;
+} __attribute__((packed));
 }  // namespace system::cpu

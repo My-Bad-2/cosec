@@ -1,20 +1,18 @@
 #include <stdint.h>
 #include <debug/log.hpp>
 #include <system/gdt.hpp>
+#include <system/tss.hpp>
 #include <mutex>
 
 // external asm function helper
-extern "C" {
-void gdt_update(uint64_t descriptor);
-}
 
 namespace system::gdt {
-static Tss tss = {0, {}, 0, {}, 0, 0, 0, 0};
-static Gdt gdt = {};
-static Descriptor desc = {sizeof(Gdt) - 1, reinterpret_cast<uint64_t>(&gdt)};
+tss::tss_t tss = {0, {}, 0, {}, 0, 0, 0, 0};
+gdt_t gdt = {};
+gdt_descriptor_t desc = {sizeof(gdt_t) - 1, reinterpret_cast<uint64_t>(&gdt)};
 static std::mutex lock;
 
-void Entry::set(uint32_t base, uint32_t limit, uint8_t granularity,
+void gdt_entry_t::set(uint32_t base, uint32_t limit, uint8_t granularity,
                 uint8_t flags) {
     this->limit_low = static_cast<uint16_t>(limit & 0xFFFF);
     this->base_low = static_cast<uint16_t>(base & 0xFFFF);
@@ -25,8 +23,8 @@ void Entry::set(uint32_t base, uint32_t limit, uint8_t granularity,
     this->base_high = static_cast<uint8_t>((base >> 24) & 0xFF);
 }
 
-void Tss_Entry::set(uintptr_t tss) {
-    this->len = sizeof(Tss);
+void tss_entry_t::set(uintptr_t tss) {
+    this->len = sizeof(tss::tss_t);
     this->base_low = static_cast<uint16_t>(tss & 0xFFFF);
     this->base_mid = static_cast<uint8_t>((tss >> 16) & 0xFF);
     this->flags0 = 0b10001001;
@@ -57,12 +55,8 @@ void init() {
 
     gdt_update(reinterpret_cast<uintptr_t>(&desc));
 
+    tss::init(&tss, &gdt);
+
     log::info << "Initialized GDT!\n";
-}
-
-void load_tss(Tss* tss) {
-    gdt.tss.set(reinterpret_cast<uintptr_t>(tss));
-
-    tss_update();
 }
 }  // namespace system::gdt

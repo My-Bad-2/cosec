@@ -4,6 +4,8 @@ src += files(
 
     'system/gdt/gdt.asm',
     'system/gdt/gdt.cpp',
+    'system/gdt/tss.cpp',
+    'system/gdt/tss.asm',
     
     'system/interrupts/idt.asm',
     'system/interrupts/idt.cpp',

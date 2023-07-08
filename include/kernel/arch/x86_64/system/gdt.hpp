@@ -22,7 +22,7 @@
 #define GDT_RING_3      3
 
 namespace system::gdt {
-struct Entry {
+struct gdt_entry_t {
     uint16_t limit_low;
     uint16_t base_low;
     uint8_t base_mid;
@@ -34,12 +34,12 @@ struct Entry {
     void set(uint32_t base = 0, uint32_t limit = 0, uint8_t granularity = 0, uint8_t flags = 0);
 } __attribute__((packed));
 
-struct Descriptor {
+struct gdt_descriptor_t {
     uint16_t limit;
     uint64_t base;
 } __attribute__((packed));
 
-struct Tss_Entry {
+struct tss_entry_t {
     uint16_t len;
     uint16_t base_low;
     uint8_t base_mid;
@@ -52,24 +52,13 @@ struct Tss_Entry {
     void set(uintptr_t tss);
 } __attribute__((packed));
 
-struct Tss {
-    uint32_t reserved;
-    uint64_t rsp[3];
-    uint64_t reserved0;
-    uint64_t ist[7];
-    uint32_t reserved1;
-    uint32_t reserved2;
-    uint32_t reserved3;
-    uint16_t iopb_offset;
+struct gdt_t {
+    gdt_entry_t entries[GDT_ENTRY_COUNT];
+    tss_entry_t tss;
 } __attribute__((packed));
 
-struct Gdt {
-    Entry entries[GDT_ENTRY_COUNT];
-    Tss_Entry tss;
-} __attribute__((packed));
+extern gdt_t gdt;
 
 void init();
-
-void load_tss(Tss* tss);
-extern "C" void tss_update();
+extern "C" void gdt_update(uint64_t descriptor);
 }  // namespace system::gdt

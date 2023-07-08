@@ -11,13 +11,13 @@
 extern "C" uintptr_t __interrupt_vector[256];
 
 namespace system::idt {
-static Idt idt = {};
-static Descriptor desc = {
-    sizeof(Idt) - 1,
+idt_t idt = {};
+static idt_descriptor_t desc = {
+    sizeof(idt_t) - 1,
     reinterpret_cast<uintptr_t>(&idt),
 };
 
-void Entry::set(uintptr_t handler, uint8_t ist, uint8_t flags) {
+void idt_entry_t::set(uintptr_t handler, uint8_t ist, uint8_t flags) {
     this->offset_low = handler;
     this->code_segment = GDT_KERNEL_CODE * 8;
     this->ist = ist;
