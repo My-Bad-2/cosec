@@ -11,7 +11,7 @@
 #define halt system::cpu::halt
 #define interrupt_toggle system::cpu::interrupt_toggle
 
-using register_t = system::cpu::register_t;
+typedef system::cpu::register_t register_t;
 
 namespace kernel::arch {
 void early_init();
