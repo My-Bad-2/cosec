@@ -31,8 +31,12 @@ dnf group install "C Development Tools and Libraries"
 1. Go to project root directory
 2. From that directory, run
 ```shell
+cp cross-files/meson-kernel-clang-x86_64.cross-file.example cross-files/meson-kernel-clang-x86_64.cross-file
+
 meson setup build --cross-file cross-files/meson-kernel-clang-x86_64.cross-file [-Doptions=...]
 ```
+
+Make sure to edit `cross-files/meson-kernel-clang-x86_64.cross-file` according to your toolchain.
 
 Visit [meson_options.txt](meson_options.txt) for various options while configuring.
 
