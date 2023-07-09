@@ -1,5 +1,12 @@
 # COSEC
 
+<div align="center">
+<img src="https://img.shields.io/github/license/my-bad-2/cosec?style=for-the-badge" alt="MIT License">
+<img alt="GitHub language count" src="https://img.shields.io/github/languages/top/my-bad-2/cosec?style=for-the-badge">
+<img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/t/my-bad-2/cosec/main?style=for-the-badge">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/my-bad-2/cosec?style=for-the-badge">
+</div>
+
 ## About
 A hobby OS with minimal functionality for x86_64-based systems.
 
