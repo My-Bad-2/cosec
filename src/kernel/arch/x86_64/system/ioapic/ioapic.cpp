@@ -102,7 +102,11 @@ static ioapic& _ioapic_for_gsi(uint32_t gsi) {
 
     if (ret == nullptr) {
         log::error << "Couldn't find IOAPIC for GSI " << gsi << '\n';
-        __builtin_unreachable();
+
+        while (true) {
+            asm volatile("cli");
+            asm volatile("hlt");
+        }
     }
 
     return *ret;

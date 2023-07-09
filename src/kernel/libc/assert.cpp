@@ -1,6 +1,6 @@
 #include <assert.h>
-#include <arch.hpp>
 #include <stdint.h>
+#include <arch.hpp>
 #include <debug/log.hpp>
 
 void assertion_failed(const char* msg, const char* file, int line) {
@@ -10,6 +10,7 @@ void assertion_failed(const char* msg, const char* file, int line) {
                << ", line: " << line << "\n";
 
     while (true) {
+        disable_interrupts();
         halt();
     }
 }

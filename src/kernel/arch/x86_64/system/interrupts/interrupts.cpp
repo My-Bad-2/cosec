@@ -168,6 +168,10 @@ std::pair<interrupt_handler&, uint8_t> allocate_handler(uint8_t hint) {
     }
 
     log::error << "Out of Interrupt handlers\n";
-    __builtin_unreachable();
+
+    while (true) {
+        asm volatile("cli");
+        asm volatile("hlt");
+    }
 }
 }  // namespace system::idt

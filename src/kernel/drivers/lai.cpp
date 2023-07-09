@@ -33,7 +33,10 @@ void laihost_log(int level, const char* msg) {
 __attribute__((noreturn)) void laihost_panic(const char* msg) {
     log::error << msg << '\n';
 
-    __builtin_unreachable();
+    while (true) {
+        disable_interrupts();
+        halt();
+    }
 }
 
 void* laihost_malloc(size_t size) {
