@@ -52,16 +52,11 @@ supports_bios = supported_archs[arch][1]
 qemu_args += supported_archs[arch][2]
 qemu = 'qemu-system-' + arch
 
-if get_option('vnc')
-    qemu_args += ['-vnc', '127.0.0.1:1']
-endif
-
 lldb = get_option('lldb')
 if get_option('lldb_debug') or lldb
 qemu_args += [
     '-no-reboot', '-no-shutdown',
-    '-d', 'int', '-D', logfile,
-    # '-monitor', 'telnet:127.0.0.1:12345,nowait'
+    '-d', 'int', '-D', logfile
 ]
 
 if arch == 'x86_64'
