@@ -2,27 +2,14 @@
 
 #include <stdint.h>
 #include <functional>
+#include <system/cpu.hpp>
 #include <utility>
 #include <utils>
 
 namespace system::idt {
-struct Regs {
-    uint64_t r15, r14, r13, r12, r11, r10, r9, r8;
-    uint64_t rbp, rdi, rsi, rdx, rcx, rbx, rax;
-
-    uint64_t int_no;
-    uint64_t error_code;
-
-    uint64_t rip;
-    uint64_t cs;
-    uint64_t rflags;
-    uint64_t rsp;
-    uint64_t ss;
-} __attribute__((packed));
-
 class interrupt_handler {
    private:
-    std::function<void(Regs*)> handler;
+    std::function<void(cpu::register_t*)> handler;
     bool reserved = false;
 
    public:
@@ -35,8 +22,8 @@ class interrupt_handler {
         }
 
         this->handler = [func = std::forward<Func>(func),
-                         ... args =
-                             std::forward<Args>(args)](Regs* regs) mutable {
+                         ... args = std::forward<Args>(args)](
+                            cpu::register_t* regs) mutable {
             func(regs, args...);
         };
 
@@ -62,7 +49,7 @@ class interrupt_handler {
 
     bool get() { return bool(this->handler); }
 
-    bool operator()(Regs* regs) {
+    bool operator()(cpu::register_t* regs) {
         if (this->get() == false) {
             return false;
         }

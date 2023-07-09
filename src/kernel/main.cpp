@@ -1,7 +1,7 @@
+#include <kernel.h>
 #include <limine.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <kernel.h>
 
 #include <arch.hpp>
 

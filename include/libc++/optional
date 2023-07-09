@@ -1,0 +1,12 @@
+#pragma once
+
+#include <frg/optional.hpp>
+
+namespace std {
+template<typename T>
+using optional = frg::optional<T>;
+
+using nullopt_t = frg::null_opt_type;
+
+static constexpr nullopt_t nullopt;
+}

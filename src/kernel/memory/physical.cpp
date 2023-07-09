@@ -1,21 +1,21 @@
+#include <kernel.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
 #include <debug/log.hpp>
+
 #include <memory/bitmap.hpp>
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
 
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-
 #include <algorithm>
 #include <mutex>
-#include "arch.hpp"
-#include <kernel.h>
 
 namespace kernel::memory::physical {
 static uintptr_t mem_usable_top = 0;
 static size_t last_index = 0;
-static Bitmap bitmap;
+static bitmap_t bitmap;
 static std::mutex lock;
 
 size_t usable_mem = 0;
@@ -65,7 +65,7 @@ void* alloc_impl(size_t count, size_t limit) {
 
 void* alloc(size_t count) {
     std::unique_lock guard(lock);
-    
+
     if (count == 0) {
         return nullptr;
     }

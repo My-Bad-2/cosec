@@ -1,7 +1,9 @@
 #include <arch.hpp>
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <debug/log.hpp>
+
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
 #include <memory/virtual.hpp>

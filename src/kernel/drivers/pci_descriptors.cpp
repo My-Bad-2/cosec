@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <string.h>
-#include "stdlib.h"
+#include <stdlib.h>
 
 namespace kernel::drivers::pci {
 const char* device_classes[] = {

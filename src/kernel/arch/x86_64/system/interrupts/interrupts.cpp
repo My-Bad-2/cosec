@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <system/cpu.hpp>
 #include <system/idt.hpp>
 #include <system/interrupts.hpp>
 #include <system/lapic.hpp>
@@ -68,7 +69,7 @@ static size_t dump_backtrace(uintptr_t rbp) {
     return i;
 }
 
-void dump_register(const idt::Regs* regs) {
+void dump_register(const cpu::register_t* regs) {
     log::debug << "RIP: " << regs->rip << " | RSP: " << regs->rsp << "\n";
     log::debug << "CS : " << regs->cs << " | SS: " << regs->ss
                << " | RFlags: " << regs->rflags << "\n";
@@ -89,7 +90,7 @@ void eoi(uint64_t int_no) {
     pic::eoi(int_no);
 }
 
-static void interrupt_error_handler(idt::Regs* regs) {
+static void interrupt_error_handler(cpu::register_t* regs) {
     if (has_panic) {
         log::error << "[NESTED PANIC]"
                    << "\n";
@@ -122,7 +123,7 @@ static void interrupt_error_handler(idt::Regs* regs) {
 }
 
 extern "C" uint64_t interrupt_handler(uint64_t rsp) {
-    idt::Regs* regs = reinterpret_cast<idt::Regs*>(rsp);
+    cpu::register_t* regs = reinterpret_cast<cpu::register_t*>(rsp);
 
     if (regs->int_no < 32) {
         interrupt_error_handler(regs);

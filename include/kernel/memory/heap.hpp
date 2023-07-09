@@ -6,7 +6,7 @@
 #include <mutex>
 
 namespace kernel::memory::heap {
-struct Slab {
+struct slab_t {
     std::mutex lock;
     uintptr_t first_free;
     size_t entry_size;
@@ -16,20 +16,20 @@ struct Slab {
     void free(void* ptr);
 };
 
-struct Slab_header {
-    Slab* slab;
+struct slab_header_t {
+    slab_t* slab;
 };
 
-struct Big_alloc_meta {
+struct big_alloc_meta_t {
     size_t pages;
     size_t size;
 };
 
-class Slab_alloc {
+class slab_alloc_t {
    private:
     std::mutex lock;
     
-    Slab* get_slab(size_t size);
+    slab_t* get_slab(size_t size);
 
     void* big_malloc(size_t size);
     void* big_realloc(void* ptr, size_t size);
@@ -37,9 +37,9 @@ class Slab_alloc {
     size_t big_alloc_size(void* ptr);
 
    public:
-    Slab slabs[10];
+    slab_t slabs[10];
 
-    Slab_alloc();
+    slab_alloc_t();
 
     void* malloc(size_t size);
     void* calloc(size_t num, size_t size);
@@ -70,7 +70,7 @@ class Slab_alloc {
     }
 };
 
-extern frg::manual_box<Slab_alloc> allocator;
+extern frg::manual_box<slab_alloc_t> allocator;
 
 void init();
 }  // namespace kernel::memory::heap

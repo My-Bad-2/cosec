@@ -31,5 +31,6 @@ typedef long suseconds_t;
 typedef long clock_t;
 typedef int clockid_t;
 typedef long time_t;
+typedef long seconds_t;
 
 #endif

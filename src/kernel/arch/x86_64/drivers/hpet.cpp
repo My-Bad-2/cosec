@@ -15,12 +15,13 @@
 
 #include <memory/memory.hpp>
 
+#include <system/cpu.hpp>
 #include <system/idt.hpp>
 #include <system/interrupts.hpp>
 #include <system/ioapic.hpp>
 
+#include <tasking/lock.hpp>
 #include <time/time.hpp>
-#include "tasking/lock.hpp"
 
 namespace kernel::drivers::hpet {
 std::vector<comparator*> comparators;
@@ -121,9 +122,9 @@ device::device(acpi_hpet_header_t* table)
 
         if (timer.fsb) {
             auto [handler, vector] = idt::allocate_handler();
-            handler.set([this, &timer](idt::Regs*) {
+            handler.set([this, &timer](cpu::register_t*) {
                 std::unique_lock guard(timer.lock);
-                
+
                 if (static_cast<bool>(timer.func) == false) {
                     return;
                 }
@@ -164,7 +165,7 @@ device::device(acpi_hpet_header_t* table)
 
                 gsi_mask = gsi + 0x20;
 
-                idt::handlers[gsi_vector].set([this](idt::Regs*) {
+                idt::handlers[gsi_vector].set([this](cpu::register_t*) {
                     for (size_t i = 0; i < this->comp_count; i++) {
                         if (this->regs->ist & (1 << i)) {
                             comparator& timer = this->comps[i];

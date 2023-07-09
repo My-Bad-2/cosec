@@ -9,7 +9,6 @@
 #include <memory/virtual.hpp>
 
 #include <system/cpu.hpp>
-#include "limine.h"
 
 namespace kernel::memory::virt {
 enum {

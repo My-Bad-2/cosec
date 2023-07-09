@@ -2,9 +2,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-using time_t = long;
-using seconds_t = long;
+#include <sys/types.h>
 
 namespace kernel::time {
 struct timespec {

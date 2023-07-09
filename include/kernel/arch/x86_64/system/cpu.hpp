@@ -1,12 +1,13 @@
 #pragma once
 
+#include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <system/gdt.hpp>
 #include <system/idt.hpp>
-#include <system/tss.hpp>
 #include <system/lapic.hpp>
-#include <errno.h>
+#include <system/tss.hpp>
 
 namespace system::cpu {
 enum xcr0_bit {
@@ -134,26 +135,36 @@ void interrupt_toggle(bool status);
 
 void fninit();
 
+struct register_t {
+    uint64_t r15, r14, r13, r12, r11, r10, r9, r8;
+    uint64_t rbp, rdi, rsi, rdx, rcx, rbx, rax;
+
+    uint64_t int_no;
+    uint64_t error_code;
+
+    uint64_t rip;
+    uint64_t cs;
+    uint64_t rflags;
+    uint64_t rsp;
+    uint64_t ss;
+} __attribute__((packed));
+
 struct cpu_t {
-    cpu_t* self; // pointer to this structure
-    uint64_t id; // APIC/CPU id
+    cpu_t* self = this;  // pointer to this structure
+    uint64_t id;         // APIC/CPU id
 
     uint64_t arch_id = 0;
 
     tss::tss_t tss __attribute__((aligned(16)));
 
-    gdt::gdt_t* gdt; // gdt
+    gdt::gdt_t* gdt;  // gdt
     gdt::gdt_descriptor_t gdt_ptr;
     idt::idt_descriptor_t idt_ptr;
 
     lapic::lapic lapic;
     uint64_t lapic_ticks_per_ms;
-    
-    size_t fpu_size;
-    void (*fpu_save)(void*);
-    void (*fpu_load)(void*);
 
     errno_t error;
-    volatile bool is_up = false;
+    bool is_up = false;
 } __attribute__((packed));
 }  // namespace system::cpu

@@ -1,10 +1,12 @@
 #include <drivers/framebuffer.hpp>
 
 #include <common/math.h>
+
 #include <limine.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <debug/log.hpp>
 
 namespace kernel::drivers::fb {
@@ -12,7 +14,7 @@ limine_framebuffer** framebuffers = nullptr;
 limine_framebuffer* main_frm = nullptr;
 uint64_t frm_count = 0;
 
-Color::Color(uint32_t color) {
+color_t::color_t(uint32_t color) {
     this->r = ((color >> 16) & 0xFF);
     this->g = ((color >> 8) & 0xFF);
     this->b = (color & 0xFF);
@@ -29,7 +31,8 @@ void init(limine_framebuffer_response* framebuffer) {
     log::info << "Initialized Framebuffer!\n";
 }
 
-void plot_pixel(uint64_t x, uint64_t y, Color color, limine_framebuffer* frm) {
+void plot_pixel(uint64_t x, uint64_t y, color_t color,
+                limine_framebuffer* frm) {
     uint32_t* addr = reinterpret_cast<uint32_t*>(
         reinterpret_cast<uint64_t>(frm->address) +
         ((y * (frm->pitch / (frm->bpp / 8)) * 4)) + (x * 4));
@@ -40,7 +43,7 @@ void plot_pixel(uint64_t x, uint64_t y, Color color, limine_framebuffer* frm) {
 }
 
 namespace details {
-void plot_line_low(vec2<uint64_t> p0, vec2<uint64_t> p1, Color color) {
+void plot_line_low(vec2<uint64_t> p0, vec2<uint64_t> p1, color_t color) {
     uint64_t dx = p1.x - p0.x;
     uint64_t dy = p1.y - p0.y;
     uint64_t yi = 1;
@@ -65,7 +68,7 @@ void plot_line_low(vec2<uint64_t> p0, vec2<uint64_t> p1, Color color) {
     }
 }
 
-void plot_line_high(vec2<uint64_t> p0, vec2<uint64_t> p1, Color color) {
+void plot_line_high(vec2<uint64_t> p0, vec2<uint64_t> p1, color_t color) {
     uint64_t dx = p1.x - p0.x;
     uint64_t dy = p1.y - p0.y;
     uint64_t xi = 1;
@@ -91,7 +94,7 @@ void plot_line_high(vec2<uint64_t> p0, vec2<uint64_t> p1, Color color) {
 }
 }  // namespace details
 
-void plot_line(vec2<uint64_t> p0, vec2<uint64_t> p1, Color color) {
+void plot_line(vec2<uint64_t> p0, vec2<uint64_t> p1, color_t color) {
     if (abs(p1.y - p0.y) < abs(p1.x - p0.x)) {
         if (p0.x > p1.x) {
             details::plot_line_low(p1, p0, color);

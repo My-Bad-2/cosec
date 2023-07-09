@@ -23,7 +23,8 @@ void get_sys_info() {
                       : "disabled")
               << '\n';
     log::info << "Total memory:   \t" << total_memory << "MB\n";
-    log::info << "Total CPUs:     \t" << smp_request.response->cpu_count << '\n';
+    log::info << "Total CPUs:     \t" << smp_request.response->cpu_count
+              << '\n';
 
     // log::info << "Time since boot:\t" << Hex64(seconds_since_boot()) << '\n';
     // Issue while printing time.

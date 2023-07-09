@@ -1,6 +1,8 @@
 #include <common/math.h>
+#include <stdint.h>
+
 #include <arch.hpp>
-#include <cstdint>
+
 #include <time/time.hpp>
 
 namespace kernel::time {
@@ -32,6 +34,7 @@ uint64_t time_ms() {
 
 void nsleep(uint64_t ns) {
     uint64_t target = time_ns() + ns;
+
     while (time_ns() < target) {
         pause();
     }
@@ -39,6 +42,7 @@ void nsleep(uint64_t ns) {
 
 void msleep(uint64_t ms) {
     uint64_t target = time_ms() + ms;
+
     while (time_ms() < target) {
         pause();
     }

@@ -1,15 +1,17 @@
 #include <assert.h>
-#include <lai/host.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cstdint>
+
+#include <algorithm>
+
+#include <lai/host.h>
+
 #include <debug/log.hpp>
 
 #include <arch.hpp>
 
-#include <algorithm>
 #include <memory/memory.hpp>
 #include <memory/physical.hpp>
 #include <memory/virtual.hpp>

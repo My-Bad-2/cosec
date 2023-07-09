@@ -1,6 +1,5 @@
 #include <common/mmio.hpp>
 
-
 namespace mmio {
 void write8(uintptr_t address, uint8_t val) {
     (*((volatile uint8_t*)address)) = val;

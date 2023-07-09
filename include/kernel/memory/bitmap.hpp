@@ -4,13 +4,13 @@
 #include <stdint.h>
 #include <string.h>
 
-struct Bitmap {
+struct bitmap_t {
     size_t size;
     uint8_t* buffer;
 
-    constexpr Bitmap() : size(0), buffer(nullptr) {}
+    constexpr bitmap_t() : size(0), buffer(nullptr) {}
 
-    constexpr Bitmap(uint8_t* buffer, size_t size)
+    constexpr bitmap_t(uint8_t* buffer, size_t size)
         : size(size), buffer(buffer) {}
 
     constexpr bool set(size_t idx, bool value) {
