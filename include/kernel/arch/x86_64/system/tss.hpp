@@ -15,8 +15,19 @@ struct tss_t {
     uint32_t reserved3;
     uint16_t iopb_offset;
 
+    /**
+     * @brief Set the kernel stack object
+     * 
+     * @param stack 
+     */
     inline void set_kernel_stack(uint64_t stack) { this->rsp[0] = stack; }
 } __attribute__((packed));
 
+/**
+ * @brief Initialize Task state Segment
+ * 
+ * @param tss 
+ * @param gdt 
+ */
 void init(tss_t* tss, gdt::gdt_t* gdt);
 }  // namespace system::tss

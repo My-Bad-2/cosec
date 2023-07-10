@@ -1,5 +1,8 @@
 global load_tss
 
+; rdi - address
+; rsi - gdt
+; rdx - selector
 load_tss:
     push rbx ; save rbx
 

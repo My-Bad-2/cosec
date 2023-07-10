@@ -21,6 +21,7 @@ void init(tss_t* tss, gdt::gdt_t* gdt) {
 
     memset(tss, 0, sizeof(tss_t));
 
+    // Set up interrupt stack tables
     tss->ist[0] =
         to_higher_half(reinterpret_cast<uint64_t>(physical::alloc(8)));
     tss->ist[1] =
