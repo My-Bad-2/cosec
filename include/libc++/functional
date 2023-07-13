@@ -1,8 +1,13 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <type_traits>
+#include <utility>
 
+namespace std {
+namespace details {
 constexpr __int128_t MurmurHash3_128(const void* key, uint64_t len,
                                      uint64_t seed, void* out = nullptr) {
     auto rotl64 = [](uint64_t x, int8_t r) {
@@ -187,20 +192,146 @@ constexpr uint64_t FNV1a(const void* key, uint64_t len,
     return h;
 }
 
-constexpr inline size_t _hash(const void* ptr, uint64_t len,
-                              uint64_t seed = 0xC70F6907UL) {
+constexpr inline size_t hash_bytes(const void* ptr, uint64_t len,
+                                   uint64_t seed = 0xC70F6907UL) {
     return MurmurHash2_64A(ptr, len, seed);
 }
 
-constexpr inline size_t _hash(const auto& val) {
+constexpr inline size_t hash(const auto& val) {
     return _hash(&val, sizeof(val));
 }
 
-constexpr inline size_t _hash_combine(const auto& val, uint64_t old) {
+constexpr inline size_t hash_combine(const auto& val, uint64_t old) {
     return _hash(&val, sizeof(val), old);
 }
+}  // namespace details
 
-namespace std {
+template <typename Result, typename Arg>
+struct __hash_base {
+    typedef Result result_type [[__deprecated__]];
+    typedef Arg argument_type [[__deprecated__]];
+};
+
+template <typename T>
+struct hash;
+
+template <typename _Tp, typename = void>
+struct __poison_hash {
+    static constexpr bool __enable_hash_call = false;
+
+   private:
+    // Private rather than deleted to be non-trivially-copyable.
+    __poison_hash(__poison_hash&&);
+    ~__poison_hash();
+};
+
+template <typename _Tp>
+struct __poison_hash<_Tp, void_t<decltype(hash<_Tp>()(declval<_Tp>()))>> {
+    static constexpr bool __enable_hash_call = true;
+};
+
+// Helper struct for SFINAE-poisoning non-enum types.
+template <typename _Tp, bool = is_enum<_Tp>::value>
+struct __hash_enum {
+   private:
+    // Private rather than deleted to be non-trivially-copyable.
+    __hash_enum(__hash_enum&&);
+    ~__hash_enum();
+};
+
+template <typename _Tp>
+struct __hash_enum<_Tp, true> : public __hash_base<size_t, _Tp> {
+    size_t operator()(_Tp __val) const noexcept {
+        using __type = typename underlying_type<_Tp>::type;
+        return hash<__type>{}(static_cast<__type>(__val));
+    }
+};
+
+template <typename _Tp>
+struct hash : __hash_enum<_Tp> {};
+
+template <typename _Tp>
+struct hash<_Tp*> : public __hash_base<size_t, _Tp*> {
+    size_t operator()(_Tp* __p) const noexcept {
+        return reinterpret_cast<size_t>(__p);
+    }
+};
+
+#define _hashtable_define_trivial_hash(_Tp)              \
+    template <>                                          \
+    struct hash<_Tp> : public __hash_base<size_t, _Tp> { \
+        size_t operator()(_Tp __val) const noexcept {    \
+            return static_cast<size_t>(__val);           \
+        }                                                \
+    }
+
+_hashtable_define_trivial_hash(bool);
+_hashtable_define_trivial_hash(char);
+_hashtable_define_trivial_hash(signed char);
+_hashtable_define_trivial_hash(unsigned char);
+_hashtable_define_trivial_hash(wchar_t);
+_hashtable_define_trivial_hash(char8_t);
+_hashtable_define_trivial_hash(char16_t);
+_hashtable_define_trivial_hash(char32_t);
+_hashtable_define_trivial_hash(short);
+_hashtable_define_trivial_hash(int);
+_hashtable_define_trivial_hash(long);
+_hashtable_define_trivial_hash(long long);
+_hashtable_define_trivial_hash(unsigned short);
+_hashtable_define_trivial_hash(unsigned int);
+_hashtable_define_trivial_hash(unsigned long);
+_hashtable_define_trivial_hash(unsigned long long);
+_hashtable_define_trivial_hash(__int128);
+_hashtable_define_trivial_hash(unsigned __int128);
+
+struct _Hash_impl {
+    static size_t hash(const void* ptr, size_t clength,
+                       size_t seed = static_cast<size_t>(0xc70f6907UL)) {
+        return details::hash_bytes(ptr, clength, seed);
+    }
+
+    template <typename T>
+    static size_t hash(const T& val) {
+        return hash(&val, sizeof(val));
+    }
+
+    template <typename T>
+    static size_t __hash_combine(const T& __val, size_t __hash) {
+        return hash(&__val, sizeof(__val), __hash);
+    }
+};
+
+template <>
+struct hash<float> : public __hash_base<size_t, float> {
+    size_t operator()(float __val) const noexcept {
+        return __val != 0.0f ? std::_Hash_impl::hash(__val) : 0;
+    }
+};
+
+template <>
+struct hash<double> : public __hash_base<size_t, double> {
+    size_t operator()(double __val) const noexcept {
+        // 0 and -0 both hash to zero.
+        return __val != 0.0 ? std::_Hash_impl::hash(__val) : 0;
+    }
+};
+
+template <>
+struct hash<long double> : public __hash_base<size_t, long double> {
+    [[gnu::pure]] size_t operator()(long double __val) const noexcept;
+};
+
+template <>
+struct hash<nullptr_t> : public __hash_base<size_t, nullptr_t> {
+    size_t operator()(nullptr_t) const noexcept { return 0; }
+};
+
+template <typename _Hash>
+struct __is_fast_hash : public std::true_type {};
+
+template <>
+struct __is_fast_hash<hash<long double>> : public std::false_type {};
+
 template <typename func>
 class function;
 
@@ -259,5 +390,32 @@ class function<retval(Args...)> {
     bool operator==(bool set) { return (this->callable_ != nullptr) == set; }
 
     operator bool() { return this->callable_ != nullptr; }
+};
+
+template <typename Arg1, typename Arg2, typename Result>
+struct binary_function {
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
+};
+
+template <typename _Tp = void>
+struct equal_to;
+
+template <typename _Tp = void>
+struct not_equal_to;
+
+template <typename _Tp>
+struct equal_to : public binary_function<_Tp, _Tp, bool> {
+    constexpr bool operator()(const _Tp& __x, const _Tp& __y) const {
+        return __x == __y;
+    }
+};
+
+template <typename _Tp>
+struct not_equal_to : public binary_function<_Tp, _Tp, bool> {
+    constexpr bool operator()(const _Tp& __x, const _Tp& __y) const {
+        return __x != __y;
+    }
 };
 }  // namespace std
