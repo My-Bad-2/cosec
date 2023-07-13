@@ -17,6 +17,8 @@
 #include <time/time.hpp>
 
 namespace system::lapic {
+lapic lapic_;
+
 bool lapic::x2apic_check() {
     uint32_t a, b, c, d;
     if (cpu::id(1, 0, a, b, c, d) == false) {
@@ -61,6 +63,7 @@ void lapic::timer_calibrate() {
     this->write(LAPIC_TICR, 0xFFFFFFFF);
 
     this->write(LAPIC_TIMER, this->read(LAPIC_TIMER) & ~(1 << 16));
+    kernel::time::msleep(10);
     this->write(LAPIC_TIMER, this->read(LAPIC_TIMER) | (1 << 16));
 
     this->ticks_per_ms = (0xFFFFFFFF - this->read(LAPIC_TCCR)) / 10;

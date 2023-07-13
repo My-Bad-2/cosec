@@ -1,0 +1,204 @@
+#pragma once
+
+#include <allocator>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <type_traits>
+#include <utility>
+
+namespace std {
+template <typename T>
+class queue {
+   public:
+    queue() : m_storage(nullptr), m_capacity(0), m_size(0) {}
+
+    queue(queue<T>& other)
+        : m_capacity(other.m_capacity),
+          m_size(other.m_size),
+          m_front(other.m_front),
+          m_back(other.m_back) {
+        m_storage = (T*)calloc(m_size, sizeof(T));
+        for (size_t i = 0; i < m_size; i++) {
+            new (&m_storage[i]) T(other.m_storage[i]);
+        }
+    }
+
+    queue(queue<T>&& other) noexcept
+        : m_storage(other.m_storage),
+          m_capacity(other.m_capacity),
+          m_size(other.m_size),
+          m_front(other.m_front),
+          m_back(other.m_back) {
+        other.m_storage = nullptr;
+        other.m_capacity = 0;
+        other.m_size = 0;
+        other.m_front = 0;
+        other.m_back = 0;
+    }
+
+    ~queue() {
+        for (size_t i = 0; i < m_size; i++) {
+            m_storage[(m_front + i) % m_capacity].~T();
+        }
+
+        delete m_storage;
+    }
+
+    size_t size() const { return m_size; }
+
+    size_t capacity() const { return m_capacity; }
+
+    T& front() const {
+        assert(m_size);
+        return m_storage[m_front];
+    }
+
+    T& back() const {
+        assert(m_size);
+        return m_storage[m_back];
+    }
+
+    bool empty() const { return (m_size == 0); }
+
+    void push_back(const T& element) {
+        if (size() == m_capacity) {
+            realloc(m_capacity ? m_capacity * 2 : 1);
+        }
+
+        if (m_size == 0) {
+            m_front = 0;
+            m_back = 0;
+        } else {
+            m_back = (m_back + 1) % m_capacity;
+        }
+
+        new (&m_storage[m_back]) T(element);
+
+        m_size++;
+    }
+
+    T pop_front() {
+        assert(m_size);
+        T ret = m_storage[m_front];
+        m_storage[m_front].~T();
+        m_size--;
+
+        if (m_size == 0) {
+            m_front = 0;
+            m_back = 0;
+        } else {
+            m_front = (m_front + 1) % m_capacity;
+        }
+
+        return ret;
+    }
+
+    T pop_back() {
+        assert(m_size);
+        T ret = m_storage[m_back];
+        m_storage[m_back].~T();
+        m_size--;
+
+        if (m_size == 0) {
+            m_front = 0;
+            m_back = 0;
+        } else if (m_back == 0) {
+            m_back = m_capacity - 1;
+        } else {
+            m_back--;
+        }
+
+        return ret;
+    }
+
+    queue<T>& operator=(const queue<T>& other) noexcept {
+        if (this != &other) {
+            for (size_t i = 0; i < m_size; i++) {
+                m_storage[i].~T();
+            }
+
+            delete m_storage;
+
+            m_size = other.m_size;
+            m_capacity = other.m_capacity;
+            m_front = other.m_front;
+            m_back = other.m_back;
+            m_storage = other.m_storage;
+
+            for (size_t i = 0; i < m_size; i++) {
+                new (&m_storage[i]) T(other.m_storage[i]);
+            }
+        }
+
+        return *this;
+    }
+
+    queue<T>& operator=(const queue<T>&& other) noexcept {
+        if (this != &other) {
+            for (size_t i = 0; i < m_size; i++) {
+                m_storage[i].~T();
+            }
+
+            delete m_storage;
+
+            m_size = other.m_size;
+            m_capacity = other.m_capacity;
+            m_front = other.m_front;
+            m_back = other.m_back;
+            m_storage = other.m_storage;
+
+            other.m_storage = nullptr;
+            other.m_capacity = 0;
+            other.m_size = 0;
+            other.m_front = 0;
+            other.m_back = 0;
+        }
+
+        return *this;
+    }
+
+   private:
+    void realloc(size_t new_capacity) {
+        if (new_capacity == m_capacity) {
+            return;
+        }
+
+        if (m_storage == nullptr) {
+            m_capacity = new_capacity;
+            m_storage = (T*)calloc(m_capacity, sizeof(T));
+            return;
+        }
+
+        if (new_capacity < m_size) {
+            for (size_t i = new_capacity; i < m_size; i++) {
+                m_storage[i].~T();
+            }
+
+            m_size = new_capacity;
+        }
+
+        T* temp = (T*)calloc(new_capacity, sizeof(T));
+
+        for (size_t i = 0; i < m_size; i++) {
+            int old_index = (m_front + i) % m_capacity;
+            new (&temp[i]) T(m_storage[old_index]);
+            m_storage[old_index].~T();
+        }
+
+        delete m_storage;
+        m_storage = temp;
+        m_capacity = new_capacity;
+        m_front = 0;
+        m_back = m_size - 1;
+    }
+
+   private:
+    T* m_storage;
+    size_t m_capacity;
+    size_t m_size = 0;
+    size_t m_front = 0;
+    size_t m_back = 0;
+};
+};  // namespace std

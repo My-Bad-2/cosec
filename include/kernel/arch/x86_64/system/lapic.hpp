@@ -63,4 +63,6 @@ class lapic {
 
     void timer(uint8_t vector, uint64_t ms, timer_modes mode);
 };
+
+extern lapic lapic_;
 }  // namespace system::lapic

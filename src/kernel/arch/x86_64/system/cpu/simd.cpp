@@ -10,8 +10,8 @@ namespace system::simd {
 using namespace kernel::memory;
 using namespace system::cpu;
 
-static __attribute__((aligned(physical::PAGE_SIZE)))
-uint8_t initial_ctx[physical::PAGE_SIZE] = {};
+// static __attribute__((aligned(physical::PAGE_SIZE)))
+// uint8_t initial_ctx[physical::PAGE_SIZE] = {};
 
 void init_xcr0() {
     uint64_t xcr0 = 0;
@@ -61,7 +61,7 @@ void init() {
 
     log::debug << "SIMD save buffer_size = " << ctx_size() << '\n';
     fninit();
-    ctx_save(initial_ctx);
+    // ctx_save(initial_ctx);
 }
 
 size_t ctx_size() {
@@ -81,7 +81,9 @@ size_t ctx_size() {
 }
 
 void ctx_init(void* ptr) {
-    memcpy(ptr, initial_ctx, ctx_size());
+    // memcpy(ptr, initial_ctx, ctx_size());
+    fninit();
+    ctx_save(ptr);
 }
 
 void ctx_save(void* ptr) {

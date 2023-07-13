@@ -16,6 +16,7 @@ void init() {
 
     simd::init();
 
+    lapic::lapic_.init();
     ioapic::init();
 
     asm volatile("sti");
