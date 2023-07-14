@@ -80,6 +80,13 @@ limine_boot_time_request boot_time_request = {
     .response = nullptr,
 };
 
+limine_stack_size_request stack_size_request = {
+    .id = LIMINE_STACK_SIZE_REQUEST,
+    .revision = 0,
+    .response = nullptr,
+    .stack_size = kstack_size,
+};
+
 bool uefi = false;
 
 extern "C" void _start() {

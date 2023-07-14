@@ -60,6 +60,20 @@ class queue {
         return m_storage[m_back];
     }
 
+    T& at(size_t index) const {
+        assert(m_size);
+
+        if(index >= m_size) {
+            return;
+        }
+
+        return m_storage[index];
+    }
+
+    T& operator[](size_t index) {
+        return at(index);
+    }
+
     bool empty() const { return (m_size == 0); }
 
     void push_back(const T& element) {
@@ -75,6 +89,23 @@ class queue {
         }
 
         new (&m_storage[m_back]) T(element);
+
+        m_size++;
+    }
+
+    void push_front(const T& element) {
+        if (size() == m_capacity) {
+            realloc(m_capacity ? m_capacity * 2 : 1);
+        }
+
+        if (m_size == 0) {
+            m_front = 0;
+            m_back = 0;
+        } else {
+            m_back = (m_back + 1) % m_capacity;
+        }
+
+        new (&m_storage[m_front]) T(element);
 
         m_size++;
     }

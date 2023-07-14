@@ -22,7 +22,6 @@ src = files(
     'libc/stdlib.cpp',
     'libc/ctype.cpp',
     'libc/assert.cpp',
-    'libc/math.cpp',
 
     'memory/heap.cpp',
     'memory/memory.cpp',

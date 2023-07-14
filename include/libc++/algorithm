@@ -1,0 +1,123 @@
+#ifndef _CXXSHIM_ALGORITHM
+#define _CXXSHIM_ALGORITHM
+
+#include <initializer_list>
+#include <utility>
+
+namespace std {
+
+template <typename T>
+const T& min(const T& a, const T& b) {
+    return (b < a) ? b : a;
+}
+
+template <typename T>
+const T& max(const T& a, const T& b) {
+    return (a < b) ? b : a;
+}
+
+template <typename T>
+constexpr T min(std::initializer_list<T> list) {
+    auto it = list.begin();
+    T x = *it;
+    ++it;
+    while (it != list.end()) {
+        if (*it < x)
+            x = *it;
+        ++it;
+    }
+    return x;
+}
+
+template <typename T>
+constexpr T max(std::initializer_list<T> list) {
+    auto it = list.begin();
+    T x = *it;
+    ++it;
+    while (it != list.end()) {
+        if (*it > x)
+            x = *it;
+        ++it;
+    }
+    return x;
+}
+
+template <typename It, typename T>
+It find(It begin, It end, const T& value) {
+    for (auto it = begin; it != end; ++it)
+        if (*it == value)
+            return it;
+    return end;
+}
+
+template <typename It, typename Pred>
+It find_if(It begin, It end, Pred p) {
+    for (auto it = begin; it != end; ++it)
+        if (p(*it))
+            return it;
+    return end;
+}
+
+template <typename InIt, typename OutIt>
+OutIt copy(InIt begin, InIt end, OutIt d_first) {
+    while (begin != end)
+        *d_first++ = *begin++;
+    return d_first;
+}
+
+template <class OutputIt, class Size, class T>
+void fill_n(OutputIt first, Size count, const T& value) {
+    for (Size i = 0; i < count; i++)
+        *first++ = value;
+}
+
+template <class BI1, class BI2>
+constexpr BI2 move_backward(BI1 first, BI1 last, BI2 result) {
+    while (first != last) {
+        *(--result) = std::move(*(--last));
+    }
+
+    return result;
+}
+
+template <typename FIter, class T>
+constexpr FIter remove(FIter first, FIter last, const T& value) {
+    first = std::find(first, last, value);
+
+    if (first != last) {
+        for (FIter i = first; ++i != last;) {
+            if (!(*i == value)) {
+                *first++ = std::move(*i);
+            }
+        }
+    }
+
+    return first;
+}
+
+template <typename FIter, class Predicate>
+constexpr FIter remove_if(FIter first, FIter last, Predicate p) {
+    first = std::find_if(first, last, p);
+
+    if (first != last) {
+        for (FIter i = first; ++i != last;) {
+            if (!p(*i)) {
+                *first++ = std::move(*i);
+            }
+        }
+    }
+
+    return first;
+}
+
+template<class InputIter, class OutputIter>
+OutputIter move(InputIter first, InputIter last, OutputIter result) {
+    for(; first != last; ++result, ++first) {
+        *result = std::move(*first);
+    }
+
+    return result;
+}
+}  // namespace std
+
+#endif  // _CXXSHIM_ALGORITHM

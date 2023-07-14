@@ -41,6 +41,8 @@ class ioapic {
     void write_entry(uint32_t i, uint64_t value);
 
    public:
+    ioapic() = default;
+
     ioapic(uintptr_t phys_mmio_base, uint32_t gsi_base);
 
     void set(uint8_t i, uint8_t vector, delivery_mode delivery, dest_mode dest,

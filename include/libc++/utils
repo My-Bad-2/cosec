@@ -96,6 +96,11 @@ struct pair {
     }
 };
 
+template<typename T1, typename T2>
+constexpr std::pair<T1, T2> make_pair(T1 &&x, T2 &&y) {
+    return {x, y};
+}
+
 template <typename... Types>
 using tuple = frg::tuple<Types...>;
 };  // namespace std
